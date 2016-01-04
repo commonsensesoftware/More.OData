@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dictionary>
+  <Words>
+    <Recognized>
+      <Word>Commonsense</Word>
+      <Word>satisfiable</Word>
+      <Word>Mvc</Word>
+      <Word>Api</Word>
+      <Word>Edm</Word>
+      <Word>etag</Word>
+    </Recognized>
+    <DiscreteExceptions>
+      <Term>Commonsense</Term>
+      <Term>Mvc</Term>
+      <Term>Api</Term>
+      <Term>Edm</Term>
+      <Term>etag</Term>
+      <Term>SuccessOr</Term>
+    </DiscreteExceptions>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>Mvc</Acronym>
+      <Acronym>Api</Acronym>
+      <Acronym>Edm</Acronym>
+      <Acronym>etag</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>
