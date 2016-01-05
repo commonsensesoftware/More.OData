@@ -53,6 +53,10 @@
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="More, Version=1.1.0.0, Culture=neutral, PublicKeyToken=5e67f9a3da787917, processorArchitecture=MSIL">
+      <HintPath>..\packages\More.1.1.1\lib\dotnet\More.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -96,7 +100,10 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Integration\Entity.cs" />
+    <Compile Include="Integration\HttpServerUnitTest.cs" />
+    <Compile Include="Integration\PeopleController.cs" />
+    <Compile Include="Integration\PeopleRepository.cs" />
+    <Compile Include="Integration\Person.cs" />
     <Compile Include="Microsoft.OData.Edm\EdmExtensionsTest.cs" />
     <Compile Include="OData.Edm\EntityInstanceAnnotationTest.cs" />
     <Compile Include="OData.Edm\MediaLinkEntryAnnotationTest.cs" />
