@@ -14,24 +14,24 @@
     using Web.OData;
     using static System.Net.Mime.MediaTypeNames.Application;
 
-    [ODataRoutePrefix( "api/People" )]
+    [ODataRoutePrefix( "People" )]
     public class PeopleController : ODataController
     {
         private readonly IReadOnlyRepository<Person> repository = new PeopleRepository();
 
-        // GET ~/api/people
+        // GET ~/people
         [ODataRoute]
         public async Task<IHttpActionResult> Get( ODataQueryOptions<Person> options ) =>
             this.Success( await repository.GetAsync( q => options.ApplyTo( q ) ) );
 
-        // GET ~/api/people({id})
+        // GET ~/people({id})
         [ODataRoute( "({id})" )]
         public async Task<IHttpActionResult> Get( int id, ODataQueryOptions<Person> options ) =>
             this.SuccessOrNotFound( ( await repository.GetAsync( q => options.ApplyTo( q.Where( p => p.Id == id ) ) ) ).Cast<object>().SingleOrDefault() );
 
-        // GET ~/api/people({id})/$value
+        // GET ~/people({id})/$value
         [HttpGet]
-        [ODataRoute( "({key})/$value" )]
+        [ODataRoute( "({id})/$value" )]
         public async Task<IHttpActionResult> GetValue( [FromODataUri] int id )
         {
             var person = await repository.GetSingleAsync( p => p.Id == id );
@@ -50,9 +50,9 @@
             return this.SuccessOrPartialContent( stream, mediaType );
         }
 
-        // HEAD ~/api/people({id})/$value
+        // HEAD ~/people({id})/$value
         [HttpHead]
-        [ODataRoute( "({key})/$value" )]
+        [ODataRoute( "({id})/$value" )]
         public async Task<IHttpActionResult> HeadValue( [FromODataUri] int id )
         {
             var person = await repository.GetSingleAsync( p => p.Id == id );

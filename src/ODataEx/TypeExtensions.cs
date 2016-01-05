@@ -6,7 +6,6 @@
     using System.Diagnostics.Contracts;
     using System.Reflection;
     using System.Runtime.Serialization;
-    using Web.OData.Formatter;
 
     internal static class TypeExtensions
     {

@@ -37,6 +37,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.OData.Core, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.OData.Core.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Core.dll</HintPath>
       <Private>True</Private>
@@ -100,7 +101,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Integration\HttpServerUnitTest.cs" />
+    <Compile Include="Integration\WebApiUnitTest.cs" />
+    <Compile Include="Integration\InstanceAnnotationsTest.cs" />
+    <Compile Include="Integration\MediaResourceTest.cs" />
     <Compile Include="Integration\PeopleController.cs" />
     <Compile Include="Integration\PeopleRepository.cs" />
     <Compile Include="Integration\Person.cs" />

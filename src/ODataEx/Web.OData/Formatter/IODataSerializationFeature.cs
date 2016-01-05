@@ -1,6 +1,5 @@
 ﻿namespace More.Web.OData.Formatter
 {
-    using System;
     using System.Diagnostics.Contracts;
 
     /// <summary>

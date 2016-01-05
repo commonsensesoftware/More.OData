@@ -1,11 +1,7 @@
-﻿using Xunit;
-namespace More.Web.OData
+﻿namespace More.Web.OData
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Xunit;
 
     /// <summary>

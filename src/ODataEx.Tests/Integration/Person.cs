@@ -1,5 +1,6 @@
 ﻿namespace More.Integration
 {
+    using System;
     using System.Collections.Generic;
     using Web.OData;
 
@@ -39,5 +40,22 @@
         {
             get;
         } = new List<Link>();
+
+        public IList<string> SeoTerms
+        {
+            get;
+        } = new List<string>();
+
+        public DateTimeOffset Timestamp
+        {
+            get;
+            set;
+        }
+
+        public int? Flags
+        {
+            get;
+            set;
+        }
     }
 }

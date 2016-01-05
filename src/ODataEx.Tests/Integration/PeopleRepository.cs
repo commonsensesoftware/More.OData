@@ -20,30 +20,37 @@
                 {
                     Id = 1,
                     FirstName = "John",
-                    LastName = "Doe",
+                    LastName = "Doe", 
+                    PhotoImage = new byte[500],
+                    PhotoImageType = "image/png",
                     Links =
                     {
-                        new Link( "receipt", new Uri( "http://localhost:26939/api/receipts(67b4e997-e004-4521-b87d-b8b4693a8043)" ) )
+                        new Link( "receipt", new Uri( "http://remote/api/receipts(67b4e997-e004-4521-b87d-b8b4693a8043)" ) )
                     },
-                    //SeoTerms =
-                    //{
-                    //    "Doe"
-                    //}
+                    SeoTerms =
+                    {
+                        "Doe"
+                    },
+                    Timestamp = new DateTimeOffset( new DateTime( 2016, 1, 4 ) ),
+                    Flags = 42
                 },
                 new Person()
                 {
                     Id = 2,
                     FirstName = "Bill",
                     LastName = "Mei",
+                    PhotoImage = new byte[100],
+                    PhotoImageType = "image/jpg",
                     Links =
                     {
-                        new Link( "address", new Uri( "http://remote/api/addresses/3" ) ),
+                        new Link( "address", new Uri( "http://remote/api/addresses(3)" ) ),
                         new Link( "temp", new Uri( "http://tempuri.org" ) )
                     },
-                    //SeoTerms =
-                    //{
-                    //    "Bill"
-                    //}
+                    SeoTerms =
+                    {
+                        "Bill"
+                    },
+                    Timestamp = new DateTimeOffset( new DateTime( 2016, 1, 4 ) )
                 }
             }.AsQueryable();
         }

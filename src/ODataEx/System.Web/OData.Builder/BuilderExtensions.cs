@@ -1537,15 +1537,31 @@
         /// </summary>
         /// <typeparam name="TLink">The <see cref="Type">type</see> of <see cref="Link">link</see> to configure.</typeparam>
         /// <param name="configuration">The <see cref="ComplexTypeConfiguration{TComplexType}">configuration</see> to apply the conventions to.</param>
-        /// <remarks>This method applies the following standard conventions to the <paramref name="configuration"/>: namespace is "Microsoft",
+        /// <remarks>This method applies the following standard conventions to the <paramref name="configuration"/>: namespace is "OData",
         /// name is the <see cref="T:Type.Name"/> of <typeparamref name="TLink"/>, <see cref="Link.Relation"/> is aliased as "rel",
         /// and <see cref="Link.Url"/> is aliased as "href".</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
         public static void UseStandardConventions<TLink>( this ComplexTypeConfiguration<TLink> configuration ) where TLink : Link
         {
             Arg.NotNull( configuration, nameof( configuration ) );
+            configuration.UseStandardConventions( nameof( OData ) );
+        }
 
-            configuration.Namespace = nameof( Microsoft );
+        /// <summary>
+        /// Configures the specified link type to use the standard conventions.
+        /// </summary>
+        /// <typeparam name="TLink">The <see cref="Type">type</see> of <see cref="Link">link</see> to configure.</typeparam>
+        /// <param name="configuration">The <see cref="ComplexTypeConfiguration{TComplexType}">configuration</see> to apply the conventions to.</param>
+        /// <param name="namespace">The namespace applied to the link.</param>
+        /// <remarks>This method applies the following standard conventions to the <paramref name="configuration"/>:
+        /// name is the <see cref="T:Type.Name"/> of <typeparamref name="TLink"/>, <see cref="Link.Relation"/> is aliased as "rel",
+        /// and <see cref="Link.Url"/> is aliased as "href".</remarks>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        public static void UseStandardConventions<TLink>( this ComplexTypeConfiguration<TLink> configuration, string @namespace ) where TLink : Link
+        {
+            Arg.NotNull( configuration, nameof( configuration ) );
+
+            configuration.Namespace = @namespace;
             configuration.Name = typeof( TLink ).Name;
             configuration.Property( link => link.Relation ).Name = "rel";
             configuration.Property( link => link.Url ).Name = "href";
