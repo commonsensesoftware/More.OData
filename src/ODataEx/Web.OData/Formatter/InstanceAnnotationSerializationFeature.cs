@@ -8,6 +8,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Web.OData.Formatter.Serialization;
+    using static More.StringExtensions;
 
     /// <summary>
     /// Represents a serialization feature to generate instance annotations for OData entity entries.
@@ -29,7 +30,6 @@
                 yield return complexSerializer.CreateODataComplexValue( graph, complexType, serializerContext );
         }
 
-        [SuppressMessage( "Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)", Justification = "String interpolation is invariant in this context." )]
         private ODataValue GetComplexValue( EntityInstanceAnnotation entryAnnotation, object annotation, IEdmModel model, ODataComplexTypeSerializer complexSerializer, ODataSerializerContext serializerContext )
         {
             Contract.Requires( entryAnnotation != null );
@@ -51,14 +51,13 @@
             if ( !entryAnnotation.IsCollection )
                 return complexSerializer.CreateODataComplexValue( annotation, typeRef, serializerContext );
 
-            var typeName = $"Collection({typeRef.FullName()})";
+            var typeName = Invariant( $"Collection({typeRef.FullName()})" );
             var items = GetComplexValues( annotation, complexSerializer, typeRef, serializerContext );
 
             // create and serialize the annotations as a collection of complex types
             return new ODataCollectionValue() { Items = items, TypeName = typeName };
         }
 
-        [SuppressMessage( "Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)", Justification = "String interpolation is invariant in this context." )]
         private static ODataValue GetPrimitiveValue( EntityInstanceAnnotation entryAnnotation, object annotation, IEdmModel model )
         {
             // just wrap the primitive if this is not a collecton
@@ -68,13 +67,12 @@
             // primitives are not wrapped as a collection of ODataPrimitiveValue; simply build
             //  he qualified collection name and get the value as a sequence of items
             var type = model.FindType( entryAnnotation.AnnotationTypeName );
-            var typeName = $"Collection({type.FullName()})";
+            var typeName = Invariant( $"Collection({type.FullName()})" );
             var items = (System.Collections.IEnumerable) annotation;
 
             return new ODataCollectionValue() { Items = items, TypeName = typeName };
         }
 
-        [SuppressMessage( "Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)", Justification = "String interpolation is invariant in this context." )]
         private void AddAnnotations( ODataEntrySerializationContext context, IEdmModel model, IEdmEntityType entityType, object instance, ODataSerializerContext serializerContext )
         {
             Contract.Requires( context != null );
@@ -112,8 +110,7 @@
                     continue;
 
                 // add the instance annotation to the current entry
-                var qualifiedName = $"{entityType.Namespace}.{entryAnnotation.Name}";
-                var instanceAnnotation = new ODataInstanceAnnotation( qualifiedName, value );
+                var instanceAnnotation = new ODataInstanceAnnotation( entryAnnotation.QualifiedName, value );
                 entry.InstanceAnnotations.Add( instanceAnnotation );
             }
         }

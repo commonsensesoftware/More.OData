@@ -20,7 +20,7 @@
 
 
             // assert
-            Assert.Equal( relation, link.Relation );
+            Assert.Equal( relation, link.Name );
             Assert.Equal( url.OriginalString, link.Url );
         }
     }

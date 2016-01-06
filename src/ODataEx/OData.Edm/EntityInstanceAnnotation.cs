@@ -3,14 +3,17 @@
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
+    using static More.StringExtensions;
 
     /// <summary>
     /// Represents an instance annotation for a property associated with an entity entry.
     /// </summary>
     public class EntityInstanceAnnotation
     {
-        private readonly string name;
         private readonly Lazy<Func<object, object>> accessor;
+        private string @namespace;
+        private string name;
+        private string qualifiedName;
         private string annotationTypeName;
 
         /// <summary>
@@ -18,17 +21,21 @@
         /// </summary>
         /// <param name="accessor">The <see cref="Func{T, TResult}">method</see> used to retrieve the
         /// annotation value from an entity instance.</param>
+        /// <param name="namespace">The namespace of the annotation.</param>
         /// <param name="name">The name of the annotation.</param>
         /// <param name="annotationTypeName">The name of the annotation type.</param>
-        public EntityInstanceAnnotation( Func<object, object> accessor, string name, string annotationTypeName )
+        public EntityInstanceAnnotation( Func<object, object> accessor, string @namespace, string name, string annotationTypeName )
         {
             Arg.NotNull( accessor, nameof( accessor ) );
+            Arg.NotNullOrEmpty( @namespace, nameof( @namespace ) );
             Arg.NotNullOrEmpty( name, nameof( name ) );
             Arg.NotNullOrEmpty( annotationTypeName, nameof( annotationTypeName ) );
 
             this.accessor = new Lazy<Func<object, object>>( () => accessor );
+            this.@namespace = @namespace;
             this.name = name;
             this.annotationTypeName = annotationTypeName;
+            qualifiedName = Invariant( $"{@namespace}.{name}" );
         }
 
         /// <summary>
@@ -36,18 +43,22 @@
         /// </summary>
         /// <param name="accessor">The <see cref="Lazy{T}">lazy-initialized</see> <see cref="Func{T, TResult}">method</see> used
         /// to retrieve the annotation value from an entity instance.</param>
+        /// <param name="namespace">The namespace of the annotation.</param>
         /// <param name="name">The name of the annotation.</param>
         /// <param name="annotationTypeName">The name of the annotation type.</param>
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generic, lazy func." )]
-        public EntityInstanceAnnotation( Lazy<Func<object, object>> accessor, string name, string annotationTypeName )
+        public EntityInstanceAnnotation( Lazy<Func<object, object>> accessor, string @namespace, string name, string annotationTypeName )
         {
             Arg.NotNull( accessor, nameof( accessor ) );
+            Arg.NotNullOrEmpty( @namespace, nameof( @namespace ) );
             Arg.NotNullOrEmpty( name, nameof( name ) );
             Arg.NotNullOrEmpty( annotationTypeName, nameof( annotationTypeName ) );
 
             this.accessor = accessor;
+            this.@namespace = @namespace;
             this.name = name;
             this.annotationTypeName = annotationTypeName;
+            qualifiedName = Invariant( $"{@namespace}.{name}" );
         }
 
         /// <summary>
@@ -85,15 +96,61 @@
         }
 
         /// <summary>
-        /// Gets the name of the annotation.
+        /// Gets or sets the namespace of the annotation.
+        /// </summary>
+        /// <value>The annotation namespace.</value>
+        public string Namespace
+        {
+            get
+            {
+                Contract.Ensures( !string.IsNullOrEmpty( @namespace ) );
+                return @namespace;
+            }
+            set
+            {
+                Arg.NotNullOrEmpty( value, nameof( value ) );
+
+                if ( @namespace == value )
+                    return;
+
+                @namespace = value;
+                qualifiedName = Invariant( $"{@namespace}.{name}" );
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the annotation.
         /// </summary>
         /// <value>The annotation name.</value>
         public string Name
         {
             get
             {
-                Contract.Ensures(!string.IsNullOrEmpty( name ) );
+                Contract.Ensures( !string.IsNullOrEmpty( name ) );
                 return name;
+            }
+            set
+            {
+                Arg.NotNullOrEmpty( value, nameof( value ) );
+
+                if ( name == value )
+                    return;
+
+                name = value;
+                qualifiedName = Invariant( $"{@namespace}.{name}" );
+            }
+        }
+
+        /// <summary>
+        /// Gets the qualified name of the annotation.
+        /// </summary>
+        /// <value>The qualified name of the annotation.</value>
+        public string QualifiedName
+        {
+            get
+            {
+                Contract.Ensures( !string.IsNullOrEmpty( qualifiedName ) );
+                return qualifiedName;
             }
         }
 

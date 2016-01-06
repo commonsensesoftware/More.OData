@@ -11,8 +11,8 @@
     using Microsoft.Spatial;
     using More;
     using More.OData.Edm;
-    using More.Web.OData;
     using More.Web.OData.Builder;
+    using Reflection;
     using System;
     using static Globalization.CultureInfo;
     using static Reflection.BindingFlags;
@@ -23,9 +23,20 @@
     [SuppressMessage( "Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "This due to the high number of overloads. Coupling is allowed given they are extension methods. Consider partial classes if necessary." )]
     public static class BuilderExtensions
     {
+        private static readonly Lazy<MethodInfo> applyLowerCamelCase = new Lazy<MethodInfo>( () => typeof( LowerCamelCaser ).GetMethod( nameof( LowerCamelCaser.ApplyLowerCamelCase ) ) );
         private static readonly IList<IAnnotationConfiguration> NoConfigurations = new IAnnotationConfiguration[0];
         private static readonly ConcurrentDictionary<ODataModelBuilder, List<IAnnotationConfiguration>> annotations = new ConcurrentDictionary<ODataModelBuilder, List<IAnnotationConfiguration>>();
         private static readonly ConcurrentDictionary<object, ODataModelBuilder> configurationToModelBuilderMap = new ConcurrentDictionary<object, ODataModelBuilder>();
+
+        private static bool IsLowerCamelCaseEnabled( this ODataConventionModelBuilder modelBuilder )
+        {
+            Contract.Requires( modelBuilder != null );
+
+            // note: lower camel casing is enabled if the EnableLowerCamelCase has been called, which adds the
+            // LowerCamelCaser.ApplyLowerCamelCase method to the OnModelCreating callback
+            var modelCreating = modelBuilder.OnModelCreating;
+            return modelCreating?.GetInvocationList().Any( d => d.Method == applyLowerCamelCase.Value ) ?? false;
+        }
 
         /// <summary>
         /// Returns the model builder associated with the configuration.
@@ -91,7 +102,28 @@
 
             // we register a callback because the initially configured type names may have changed
             // since the time when the annotation was originally defined
-            builder.OnModelCreating += b => configuration.EntityTypeName = b.GetTypeConfigurationOrNull( entityType )?.FullName ?? configuration.EntityTypeName;
+            builder.OnModelCreating += b =>
+            {
+                var annotation = configuration.Annotation;
+                var @namespace = annotation.Namespace;
+                var entityTypeConfig = b.GetTypeConfigurationOrNull( entityType );
+                var entityTypeName = configuration.EntityTypeName;
+
+                if ( entityTypeConfig != null )
+                {
+                    @namespace = entityTypeConfig.Namespace;
+                    entityTypeName = entityTypeConfig.FullName;
+                }
+
+                if ( b.IsLowerCamelCaseEnabled() )
+                {
+                    annotation.Namespace = @namespace.ToCamelCase();
+                    annotation.Name = annotation.Name.ToCamelCase();
+                }
+
+                configuration.EntityTypeName = entityTypeName;
+            };
+
             return true;
         }
 
@@ -134,8 +166,25 @@
             builder.OnModelCreating += b =>
             {
                 var annotation = configuration.Annotation;
-                configuration.EntityTypeName = b.GetTypeConfigurationOrNull( entityType )?.FullName ?? configuration.EntityTypeName;
-                annotation.AnnotationTypeName = b.GetTypeConfigurationOrNull( annotationType )?.FullName ?? annotation.AnnotationTypeName;
+                var @namespace = annotation.Namespace;
+                var entityTypeConfig = b.GetTypeConfigurationOrNull( entityType );
+                var entityTypeName = configuration.EntityTypeName;
+                var annotationTypeName = b.GetTypeConfigurationOrNull( annotationType )?.FullName ?? annotation.AnnotationTypeName;
+
+                if ( entityTypeConfig != null )
+                {
+                    @namespace = entityTypeConfig.Namespace;
+                    entityTypeName = entityTypeConfig.FullName;
+                }
+
+                if ( b.IsLowerCamelCaseEnabled() )
+                {
+                    annotation.Namespace = @namespace.ToCamelCase();
+                    annotation.Name = annotation.Name.ToCamelCase();
+                }
+                
+                configuration.EntityTypeName = entityTypeName;
+                annotation.AnnotationTypeName = annotationTypeName;
             };
 
             return true;
@@ -232,7 +281,10 @@
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var annotationType = typeof( TProperty );
             var annotationTypeName = builder.GetTypeConfigurationOrNull( annotationType ).FullName;
-            var annotation = new EntityInstanceAnnotation( accessor, name, annotationTypeName ) { IsNullable = annotationType.IsNullable() };
+            var annotation = new EntityInstanceAnnotation( accessor, configuration.Namespace, name, annotationTypeName )
+            {
+                IsNullable = annotationType.IsNullable()
+            };
             var annotationConfig = new EntityInstanceAnnotationConfiguration( entityType.GetQualifiedEdmTypeName(), annotation );
 
             // associate the annotation with the builder and register a callback, when possible
@@ -267,7 +319,7 @@
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var annotationType = typeof( TProperty );
             var annotationTypeName = builder.GetTypeConfigurationOrNull( annotationType ).FullName;
-            var annotation = new EntityInstanceAnnotation( accessor, name, annotationTypeName )
+            var annotation = new EntityInstanceAnnotation( accessor, configuration.Namespace, name, annotationTypeName )
             {
                 IsCollection = true,
                 IsNullable = annotationType.IsNullable()
@@ -1459,7 +1511,8 @@
             var entityType = typeof( TEntityType );
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var builder = configuration.GetModelBuilder();
-            var annotation = new EntityInstanceAnnotation( accessor, name, annotationType.GetUnderlyingType().GetQualifiedEdmTypeName() )
+            var annotationTypeName = annotationType.GetUnderlyingType().GetQualifiedEdmTypeName();
+            var annotation = new EntityInstanceAnnotation( accessor, configuration.Namespace, name, annotationTypeName )
             {
                 IsComplex = true,
                 IsNullable = true
@@ -1517,7 +1570,8 @@
             var builder = configuration.GetModelBuilder();
             var entityType = typeof( TEntityType );
             var accessor = propertyExpression.ToLazyContravariantFunc();
-            var annotation = new EntityInstanceAnnotation( accessor, name, annotationType.GetUnderlyingType().GetQualifiedEdmTypeName() )
+            var annotationTypeName = annotationType.GetUnderlyingType().GetQualifiedEdmTypeName();
+            var annotation = new EntityInstanceAnnotation( accessor, configuration.Namespace, name, annotationTypeName )
             {
                 IsComplex = true,
                 IsCollection = true,
@@ -1530,41 +1584,6 @@
             builder.TryRegisterCallback( annotationConfig, entityType, annotationType );
 
             return builder.ComplexType<TProperty>();
-        }
-
-        /// <summary>
-        /// Configures the specified link type to use the standard conventions.
-        /// </summary>
-        /// <typeparam name="TLink">The <see cref="Type">type</see> of <see cref="Link">link</see> to configure.</typeparam>
-        /// <param name="configuration">The <see cref="ComplexTypeConfiguration{TComplexType}">configuration</see> to apply the conventions to.</param>
-        /// <remarks>This method applies the following standard conventions to the <paramref name="configuration"/>: namespace is "OData",
-        /// name is the <see cref="T:Type.Name"/> of <typeparamref name="TLink"/>, <see cref="Link.Relation"/> is aliased as "rel",
-        /// and <see cref="Link.Url"/> is aliased as "href".</remarks>
-        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
-        public static void UseStandardConventions<TLink>( this ComplexTypeConfiguration<TLink> configuration ) where TLink : Link
-        {
-            Arg.NotNull( configuration, nameof( configuration ) );
-            configuration.UseStandardConventions( nameof( OData ) );
-        }
-
-        /// <summary>
-        /// Configures the specified link type to use the standard conventions.
-        /// </summary>
-        /// <typeparam name="TLink">The <see cref="Type">type</see> of <see cref="Link">link</see> to configure.</typeparam>
-        /// <param name="configuration">The <see cref="ComplexTypeConfiguration{TComplexType}">configuration</see> to apply the conventions to.</param>
-        /// <param name="namespace">The namespace applied to the link.</param>
-        /// <remarks>This method applies the following standard conventions to the <paramref name="configuration"/>:
-        /// name is the <see cref="T:Type.Name"/> of <typeparamref name="TLink"/>, <see cref="Link.Relation"/> is aliased as "rel",
-        /// and <see cref="Link.Url"/> is aliased as "href".</remarks>
-        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
-        public static void UseStandardConventions<TLink>( this ComplexTypeConfiguration<TLink> configuration, string @namespace ) where TLink : Link
-        {
-            Arg.NotNull( configuration, nameof( configuration ) );
-
-            configuration.Namespace = @namespace;
-            configuration.Name = typeof( TLink ).Name;
-            configuration.Property( link => link.Relation ).Name = "rel";
-            configuration.Property( link => link.Url ).Name = "href";
         }
 
         /// <summary>

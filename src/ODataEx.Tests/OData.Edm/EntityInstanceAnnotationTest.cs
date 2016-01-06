@@ -21,14 +21,15 @@
         public void ConstructorWithFuncShouldSetExpectedName()
         {
             // arrange
-            var expected = "Test";
-            var annotation = new EntityInstanceAnnotation( o => o, expected, "annotationType" );
+            var name = "Test";
+            var qualifiedName = "Testing.Test";
 
             // act
-            var actual = annotation.Name;
+            var annotation = new EntityInstanceAnnotation( o => o, "Testing", name, "annotationType" );
 
             // assert
-            Assert.Equal( expected, actual );
+            Assert.Equal( name, annotation.Name );
+            Assert.Equal( qualifiedName, annotation.QualifiedName );
         }
 
         [Fact( DisplayName = "new entity instance annotation should set expected annotation type name" )]
@@ -36,7 +37,7 @@
         {
             // arrange
             var expected = "Test";
-            var annotation = new EntityInstanceAnnotation( o => o, "annotation", expected );
+            var annotation = new EntityInstanceAnnotation( o => o, "testing", "annotation", expected );
 
             // act
             var actual = annotation.AnnotationTypeName;
@@ -49,14 +50,15 @@
         public void ConstructorWithLazyFuncShouldSetExpectedName()
         {
             // arrange
-            var expected = "Test";
-            var annotation = new EntityInstanceAnnotation( new Lazy<Func<object, object>>( () => o => o ), expected, "annotationType" );
+            var name = "Test";
+            var qualifiedName = "Testing.Test";
 
             // act
-            var actual = annotation.Name;
+            var annotation = new EntityInstanceAnnotation( new Lazy<Func<object, object>>( () => o => o ), "Testing", name, "annotationType" );
 
             // assert
-            Assert.Equal( expected, actual );
+            Assert.Equal( name, annotation.Name );
+            Assert.Equal( qualifiedName, annotation.QualifiedName );
         }
 
         [Fact( DisplayName = "new entity instance annotation should set expected annotation type name" )]
@@ -64,7 +66,7 @@
         {
             // arrange
             var expected = "Test";
-            var annotation = new EntityInstanceAnnotation( new Lazy<Func<object, object>>( () => o => o ), "annotation", expected );
+            var annotation = new EntityInstanceAnnotation( new Lazy<Func<object, object>>( () => o => o ), "testing", "annotation", expected );
 
             // act
             var actual = annotation.AnnotationTypeName;
@@ -79,7 +81,7 @@
             // arrange
             var expected = new TimeSpan( 8, 0, 0 );
             var instance = new Entity() { Timestamp = expected };
-            var annotation = new EntityInstanceAnnotation( o => ( (Entity) o ).Timestamp, "timestamp", "Test.Timestamp" );
+            var annotation = new EntityInstanceAnnotation( o => ( (Entity) o ).Timestamp, "testing", "timestamp", "Test.Timestamp" );
 
             // act
             var actual = annotation.GetValue( instance );
@@ -95,7 +97,7 @@
             var expected = new TimeSpan( 8, 0, 0 );
             var instance = new Entity() { Timestamp = expected };
             var accessor = new Lazy<Func<object, object>>( () => o => ( (Entity) o ).Timestamp );
-            var annotation = new EntityInstanceAnnotation( accessor, "timestamp", "Test.Timestamp" );
+            var annotation = new EntityInstanceAnnotation( accessor, "testing", "timestamp", "Test.Timestamp" );
 
             // act
             var actual = annotation.GetValue( instance );

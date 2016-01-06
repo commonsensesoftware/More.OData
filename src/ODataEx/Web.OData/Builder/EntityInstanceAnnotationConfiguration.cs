@@ -45,7 +45,6 @@
         /// </summary>
         /// <param name="model">The <see cref="IEdmModel">EDM model</see> to apply the configuration to.</param>
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
-        [SuppressMessage( "Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)", Justification = "String interpolation is invariant in this context." )]
         public override void Apply( IEdmModel model )
         {
             Arg.NotNull( model, nameof( model ) );
@@ -61,10 +60,8 @@
             annotations.Add( annotation );
             model.SetAnnotationValue( entityType, annotations );
 
-            var qualifiedName = $"{entityType.Namespace}.{Annotation.Name}";
-
             // short-circuit if the term has already been added
-            if ( model.FindValueTerm( qualifiedName ) != null )
+            if ( model.FindValueTerm( annotation.QualifiedName ) != null )
                 return;
 
             // TODO: refactor this, when possible, to not use/rely on the following cast
@@ -77,15 +74,14 @@
             var edmModel = (EdmModel) model;
 
             if ( annotation.IsComplex )
-                AddComplexTerm( edmModel, entityType, annotation );
+                AddComplexTerm( edmModel, annotation );
             else
-                AddPrimitiveTerm( edmModel, entityType, annotation );
+                AddPrimitiveTerm( edmModel, annotation );
         }
 
-        private static void AddTerm( EdmModel model, IEdmSchemaType entityType, EntityInstanceAnnotation annotation, IEdmTypeReference annotationType )
+        private static void AddTerm( EdmModel model, EntityInstanceAnnotation annotation, IEdmTypeReference annotationType )
         {
             Contract.Requires( model != null );
-            Contract.Requires( entityType != null );
             Contract.Requires( annotation != null );
             Contract.Requires( annotationType != null );
 
@@ -95,36 +91,34 @@
             {
                 var collectionType = new EdmCollectionType( annotationType );
                 var collectionRef = new EdmCollectionTypeReference( collectionType );
-                term = new EdmTerm( entityType.Namespace, annotation.Name, collectionRef, AppliesTo );
+                term = new EdmTerm( annotation.Namespace, annotation.Name, collectionRef, AppliesTo );
             }
             else
             {
-                term = new EdmTerm( entityType.Namespace, annotation.Name, annotationType, AppliesTo );
+                term = new EdmTerm( annotation.Namespace, annotation.Name, annotationType, AppliesTo );
             }
 
             model.AddElement( term );
         }
 
-        private static void AddComplexTerm( EdmModel model, IEdmSchemaType entityType, EntityInstanceAnnotation annotation )
+        private static void AddComplexTerm( EdmModel model, EntityInstanceAnnotation annotation )
         {
             Contract.Requires( model != null );
-            Contract.Requires( entityType != null );
             Contract.Requires( annotation != null );
 
             var complexType = (IEdmComplexType) model.FindDeclaredType( annotation.AnnotationTypeName );
             var complexTypeRef = new EdmComplexTypeReference( complexType, annotation.IsNullable );
-            AddTerm( model, entityType, annotation, complexTypeRef );
+            AddTerm( model, annotation, complexTypeRef );
         }
 
-        private static void AddPrimitiveTerm( EdmModel model, IEdmSchemaType entityType, EntityInstanceAnnotation annotation )
+        private static void AddPrimitiveTerm( EdmModel model, EntityInstanceAnnotation annotation )
         {
             Contract.Requires( model != null );
-            Contract.Requires( entityType != null );
             Contract.Requires( annotation != null );
 
             var primitiveType = (IEdmPrimitiveType) model.FindType( annotation.AnnotationTypeName );
             var primitiveTypeRef = new EdmPrimitiveTypeReference( primitiveType, annotation.IsNullable );
-            AddTerm( model, entityType, annotation, primitiveTypeRef );
+            AddTerm( model, annotation, primitiveTypeRef );
         }
     }
 }
