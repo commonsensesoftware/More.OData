@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Reflection;
     using System.Runtime.Serialization;
@@ -26,6 +27,7 @@
 
         internal static bool IsNullable( this Type type ) => type.IsValueType ? Nullable.GetUnderlyingType( type ) != null : true;
 
+        [SuppressMessage( "Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Reserved for future use." )]
         internal static Type GetUnderlyingType( this Type type ) => type.IsValueType ? ( Nullable.GetUnderlyingType( type ) ?? type ) : type;
     }
 }

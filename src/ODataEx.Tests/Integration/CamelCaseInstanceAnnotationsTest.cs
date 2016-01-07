@@ -31,7 +31,7 @@
             person.HasAnnotation( p => p.Timestamp );
             person.HasAnnotation( p => p.Flags );
             person.HasAnnotations( p => p.SeoTerms );
-            person.HasAnnotations( p => p.Links );
+            person.HasComplexAnnotations( p => p.Links );
             person.Ignore( p => p.PhotoImage );
             person.Ignore( p => p.PhotoImageType );
 

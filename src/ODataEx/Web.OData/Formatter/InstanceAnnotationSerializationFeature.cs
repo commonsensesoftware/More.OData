@@ -30,7 +30,7 @@
                 yield return complexSerializer.CreateODataComplexValue( graph, complexType, serializerContext );
         }
 
-        private ODataValue GetComplexValue( EntityInstanceAnnotation entryAnnotation, object annotation, IEdmModel model, ODataComplexTypeSerializer complexSerializer, ODataSerializerContext serializerContext )
+        private ODataValue GetComplexValue( InstanceAnnotation entryAnnotation, object annotation, IEdmModel model, ODataComplexTypeSerializer complexSerializer, ODataSerializerContext serializerContext )
         {
             Contract.Requires( entryAnnotation != null );
             Contract.Requires( annotation != null );
@@ -58,7 +58,7 @@
             return new ODataCollectionValue() { Items = items, TypeName = typeName };
         }
 
-        private static ODataValue GetPrimitiveValue( EntityInstanceAnnotation entryAnnotation, object annotation, IEdmModel model )
+        private static ODataValue GetPrimitiveValue( InstanceAnnotation entryAnnotation, object annotation, IEdmModel model )
         {
             // just wrap the primitive if this is not a collecton
             if ( !entryAnnotation.IsCollection )
@@ -82,7 +82,7 @@
             Contract.Requires( serializerContext != null );
 
             // get all entry annotations for the entity
-            var entryAnnotations = model.GetAnnotationValue<List<EntityInstanceAnnotation>>( entityType );
+            var entryAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( entityType );
 
             // short-circuit if there are no annotations
             if ( entryAnnotations == null )

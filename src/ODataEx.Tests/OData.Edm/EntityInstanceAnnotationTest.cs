@@ -1,10 +1,12 @@
 ﻿namespace More.OData.Edm
 {
+    using Moq;
     using System;
+    using System.Web.OData.Builder;
     using Xunit;
 
     /// <summary>
-    /// Provides unit tests for <see cref="EntityInstanceAnnotation"/>.
+    /// Provides unit tests for <see cref="InstanceAnnotation"/>.
     /// </summary>
     public class EntityInstanceAnnotationTest
     {
@@ -17,19 +19,18 @@
             }
         }
 
-        [Fact( DisplayName = "new entity instance annotation should set expected name" )]
-        public void ConstructorWithFuncShouldSetExpectedName()
+        [Fact( DisplayName = "new entity instance annotation should set expected qualified name" )]
+        public void ConstructorWithFuncShouldSetExpectedQualifiedName()
         {
             // arrange
-            var name = "Test";
-            var qualifiedName = "Testing.Test";
+            var expected = "Testing.Test";
+            var annotation = new InstanceAnnotation( o => o, expected, new Mock<IEdmTypeConfiguration>().Object );
 
             // act
-            var annotation = new EntityInstanceAnnotation( o => o, "Testing", name, "annotationType" );
+            var actual = annotation.QualifiedName;
 
             // assert
-            Assert.Equal( name, annotation.Name );
-            Assert.Equal( qualifiedName, annotation.QualifiedName );
+            Assert.Equal( expected, annotation.QualifiedName );
         }
 
         [Fact( DisplayName = "new entity instance annotation should set expected annotation type name" )]
@@ -37,7 +38,11 @@
         {
             // arrange
             var expected = "Test";
-            var annotation = new EntityInstanceAnnotation( o => o, "testing", "annotation", expected );
+            var typeConfig = new Mock<IEdmTypeConfiguration>();
+
+            typeConfig.SetupGet( tc => tc.FullName ).Returns( expected );
+
+            var annotation = new InstanceAnnotation( o => o, "testing.annotation", typeConfig.Object );
 
             // act
             var actual = annotation.AnnotationTypeName;
@@ -46,19 +51,18 @@
             Assert.Equal( expected, actual );
         }
 
-        [Fact( DisplayName = "new entity instance annotation should set expected name" )]
+        [Fact( DisplayName = "new entity instance annotation should set expected qualified name" )]
         public void ConstructorWithLazyFuncShouldSetExpectedName()
         {
             // arrange
-            var name = "Test";
-            var qualifiedName = "Testing.Test";
+            var expected = "Testing.Test";
+            var annotation = new InstanceAnnotation( new Lazy<Func<object, object>>( () => o => o ), expected, new Mock<IEdmTypeConfiguration>().Object );
 
             // act
-            var annotation = new EntityInstanceAnnotation( new Lazy<Func<object, object>>( () => o => o ), "Testing", name, "annotationType" );
+            var actual = annotation.QualifiedName;
 
             // assert
-            Assert.Equal( name, annotation.Name );
-            Assert.Equal( qualifiedName, annotation.QualifiedName );
+            Assert.Equal( expected, actual );
         }
 
         [Fact( DisplayName = "new entity instance annotation should set expected annotation type name" )]
@@ -66,7 +70,11 @@
         {
             // arrange
             var expected = "Test";
-            var annotation = new EntityInstanceAnnotation( new Lazy<Func<object, object>>( () => o => o ), "testing", "annotation", expected );
+            var typeConfig = new Mock<IEdmTypeConfiguration>();
+
+            typeConfig.SetupGet( tc => tc.FullName ).Returns( expected );
+
+            var annotation = new InstanceAnnotation( new Lazy<Func<object, object>>( () => o => o ), "testing.annotation", typeConfig.Object );
 
             // act
             var actual = annotation.AnnotationTypeName;
@@ -81,7 +89,7 @@
             // arrange
             var expected = new TimeSpan( 8, 0, 0 );
             var instance = new Entity() { Timestamp = expected };
-            var annotation = new EntityInstanceAnnotation( o => ( (Entity) o ).Timestamp, "testing", "timestamp", "Test.Timestamp" );
+            var annotation = new InstanceAnnotation( o => ( (Entity) o ).Timestamp, "testing.timestamp", new Mock<IEdmTypeConfiguration>().Object );
 
             // act
             var actual = annotation.GetValue( instance );
@@ -97,7 +105,7 @@
             var expected = new TimeSpan( 8, 0, 0 );
             var instance = new Entity() { Timestamp = expected };
             var accessor = new Lazy<Func<object, object>>( () => o => ( (Entity) o ).Timestamp );
-            var annotation = new EntityInstanceAnnotation( accessor, "testing", "timestamp", "Test.Timestamp" );
+            var annotation = new InstanceAnnotation( accessor, "testing.timestamp", new Mock<IEdmTypeConfiguration>().Object );
 
             // act
             var actual = annotation.GetValue( instance );

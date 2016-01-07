@@ -63,6 +63,34 @@
             }
         }
 
+        [SuppressMessage( "Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not applicable in this type and assessible via the EntityType property." )]
+        string IAnnotationConfiguration.Namespace
+        {
+            get
+            {
+                return entityType.Namespace;
+            }
+            set
+            {
+                Arg.NotNullOrEmpty( value, nameof( value ) );
+                entityType.Namespace = value;
+            }
+        }
+
+        [SuppressMessage( "Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not applicable in this type and assessible via the EntityType property." )]
+        string IAnnotationConfiguration.Name
+        {
+            get
+            {
+                return entityType.Name;
+            }
+            set
+            {
+                Arg.NotNullOrEmpty( value, nameof( value ) );
+                entityType.Name = value;
+            }
+        }
+
         /// <summary>
         /// Registers a factory that generates read links for the media resource.
         /// </summary>

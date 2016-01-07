@@ -179,7 +179,8 @@
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Microsoft.OData.Edm\EdmExtensions.cs" />
-    <Compile Include="OData.Edm\EntityInstanceAnnotation.cs" />
+    <Compile Include="OData.Edm\InstanceAnnotation.cs" />
+    <Compile Include="OData.Edm\LowerCamelCaseAnnotation.cs" />
     <Compile Include="OData.Edm\MediaLinkEntryAnnotation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringExtensions.cs" />
@@ -187,15 +188,21 @@
     <Compile Include="System.Web\Http\HttpConfigurationExtensions.cs" />
     <Compile Include="System.Web\Http\HttpRequestMessageExtensions.cs" />
     <Compile Include="System.Web\OData.Builder\BuilderExtensions.cs" />
+    <Compile Include="System.Web\OData.Builder\BuilderExtensions.StructuralTypeAnnotations.cs" />
+    <Compile Include="System.Web\OData.Builder\BuilderExtensions.PropertyAnnotations.cs" />
     <Compile Include="System\FormattableString.cs" />
     <Compile Include="System\FormattableStringFactory.cs" />
     <Compile Include="TypeExtensions.cs" />
-    <Compile Include="Web.OData\Builder\EntityAnnotationConfiguration.cs" />
-    <Compile Include="Web.OData\Builder\EntityAnnotationConfigurationContract.cs" />
-    <Compile Include="Web.OData\Builder\EntityInstanceAnnotationConfiguration.cs" />
+    <Compile Include="Web.OData\Builder\InstanceAnnotationComparer.cs" />
+    <Compile Include="Web.OData\Builder\InstanceAnnotationConfiguration.cs" />
+    <Compile Include="Web.OData\Builder\InstanceAnnotationConfigurationContract.cs" />
+    <Compile Include="Web.OData\Builder\ComplexTypeInstanceAnnotationConfigurationT.cs" />
     <Compile Include="Web.OData\Builder\IAnnotationConfiguration.cs" />
     <Compile Include="Web.OData\Builder\IAnnotationConfigurationContract.cs" />
     <Compile Include="Web.OData\Builder\MediaTypeConfigurationT.cs" />
+    <Compile Include="Web.OData\Builder\PrimitiveInstanceAnnotationConfigurationT.cs" />
+    <Compile Include="Web.OData\Builder\PropertyInstanceAnnotationConfigurationT.cs" />
+    <Compile Include="Web.OData\Builder\StructuralTypeConfigurationExtensions.cs" />
     <Compile Include="Web.OData\EmptyStream.cs" />
     <Compile Include="Web.OData\Formatter\EdmHelper.cs" />
     <Compile Include="Web.OData\Formatter\FeaturedODataEntityTypeSerializer.cs" />

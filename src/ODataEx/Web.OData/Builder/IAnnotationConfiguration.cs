@@ -1,6 +1,7 @@
 ﻿namespace More.Web.OData.Builder
 {
     using Microsoft.OData.Edm;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
 
     /// <summary>
@@ -9,6 +10,27 @@
     [ContractClass( typeof( IAnnotationConfigurationContract ) )]
     public interface IAnnotationConfiguration
     {
+        /// <summary>
+        /// Gets or sets the annotation namespace.
+        /// </summary>
+        /// <value>The annotation namespace.</value>
+        [SuppressMessage( "Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Namespace", Justification = "Matches correct name. Will not cause cross-language issue." )]
+        string Namespace
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the annotation name.
+        /// </summary>
+        /// <value>The annotation name.</value>
+        string Name
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Applies annotation configurations to the specified EDM model.
         /// </summary>
