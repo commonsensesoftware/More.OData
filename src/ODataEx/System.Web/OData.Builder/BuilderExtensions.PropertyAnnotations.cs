@@ -21,10 +21,11 @@
         /// <typeparam name="TProperty">The <see cref="Type">type</see> of value being annotated.</typeparam>
         /// <param name="configuration">The <see cref="StructuralTypeConfiguration{TEntityType}">structural type configuration</see> to add annotations to.</param>
         /// <param name="propertyExpression">The <see cref="Expression{TDelegate}">expression</see> for the property that represents the annotation.</param>
-        /// <returns>A <see cref="ComplexTypeConfiguration{TComplexType}">complex type configuration</see> for the annotation.</returns>
+        /// <returns>A <see cref="PropertyInstanceAnnotationConfiguration{TStructuralType}">configuration</see> object that can be used to further configure
+        /// the property annotation.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
@@ -38,13 +39,20 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<PropertyInstanceAnnotationConfiguration<TStructuralType>>() != null );
 
+            var builder = configuration.GetModelBuilder();
+            var configurations = builder.GetAnnotationConfigurations();
+            PropertyInstanceAnnotationConfiguration<TStructuralType> annotationConfig;
+
+            // if the property has already been configured, return the existing configuration
+            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+                return annotationConfig;
+
             // always ignore the annotation property from the entity model
             configuration.Ignore( propertyExpression );
 
             // build an annotation for the property
             var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
-            var builder = configuration.GetModelBuilder();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
             var annotationTypeConfig = builder.ComplexType<TProperty>();
             var annotation = new InstanceAnnotation( accessor, qualifiedName, annotationTypeConfig.ToEdmTypeConfiguration() )
@@ -52,9 +60,9 @@
                 IsComplex = true,
                 IsNullable = true
             };
-            var annotationConfig = new PropertyInstanceAnnotationConfiguration<TStructuralType>( configuration, name, annotation );
 
-            builder.GetAnnotationConfigurations().Add( annotationConfig );
+            annotationConfig = new PropertyInstanceAnnotationConfiguration<TStructuralType>( configuration, name, annotation );
+            configurations.Add( propertyExpression, annotationConfig );
 
             return annotationConfig;
         }

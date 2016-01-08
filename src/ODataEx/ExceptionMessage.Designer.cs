@@ -97,6 +97,15 @@ namespace More {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The property &apos;{0}&apos; cannot be configured as an annotation more than once..
+        /// </summary>
+        internal static string MultipleAnnotationConfigsNotAllowed {
+            get {
+                return ResourceManager.GetString("MultipleAnnotationConfigsNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified seek offset and origin must result in a position that is greater than or equal to zero and less than the length of the stream..
         /// </summary>
         internal static string SeekOffsetOutOfRange {

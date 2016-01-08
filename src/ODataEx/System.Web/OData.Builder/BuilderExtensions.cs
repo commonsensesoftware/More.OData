@@ -4,19 +4,14 @@
     using Collections.Generic;
     using Diagnostics.CodeAnalysis;
     using Diagnostics.Contracts;
-    using IO;
     using Linq;
     using Linq.Expressions;
     using Microsoft.OData.Edm;
-    using Microsoft.Spatial;
-    using More;
     using More.OData.Edm;
     using More.Web.OData.Builder;
     using Reflection;
     using System;
-    using static Globalization.CultureInfo;
     using static Reflection.BindingFlags;
-    using static More.StringExtensions;
 
     /// <summary>
     /// Provides extension methods related to entity model construction.
@@ -25,8 +20,7 @@
     public static partial class BuilderExtensions
     {
         private static readonly Lazy<MethodInfo> applyLowerCamelCase = new Lazy<MethodInfo>( () => typeof( LowerCamelCaser ).GetMethod( nameof( LowerCamelCaser.ApplyLowerCamelCase ) ) );
-        private static readonly ICollection<IAnnotationConfiguration> NoConfigurations = new IAnnotationConfiguration[0];
-        private static readonly ConcurrentDictionary<ODataModelBuilder, ICollection<IAnnotationConfiguration>> annotations = new ConcurrentDictionary<ODataModelBuilder, ICollection<IAnnotationConfiguration>>();
+        private static readonly ConcurrentDictionary<ODataModelBuilder, AnnotationConfigurationCollection> annotationConfigurations = new ConcurrentDictionary<ODataModelBuilder, AnnotationConfigurationCollection>();
         private static readonly ConcurrentDictionary<object, StructuralTypeConfiguration> configurationToModelBuilderMap = new ConcurrentDictionary<object, StructuralTypeConfiguration>();
 
         private static Lazy<Func<object, object>> ToLazyContravariantFunc<TStructuralType, TProperty>( this Expression<Func<TStructuralType, TProperty>> propertyExpression )
@@ -95,12 +89,12 @@
         /// Gets the annotation configurations associated with the specified model builder.
         /// </summary>
         /// <param name="modelBuilder">The <see cref="ODataModelBuilder">model builder</see> get the annotation configurations for.</param>
-        /// <returns>A <see cref="ICollection{T}">list</see> of <see cref="IAnnotationConfiguration">annotation configurations</see>.</returns>
-        public static ICollection<IAnnotationConfiguration> GetAnnotationConfigurations( this ODataModelBuilder modelBuilder )
+        /// <returns>A <see cref="AnnotationConfigurationCollection">collection</see> of <see cref="IAnnotationConfiguration">annotation configurations</see>.</returns>
+        public static AnnotationConfigurationCollection GetAnnotationConfigurations( this ODataModelBuilder modelBuilder )
         {
             Arg.NotNull( modelBuilder, nameof( modelBuilder ) );
-            Contract.Ensures( Contract.Result<ICollection<IAnnotationConfiguration>>() != null );
-            return annotations.GetOrAdd( modelBuilder, b => new List<IAnnotationConfiguration>() );
+            Contract.Ensures( Contract.Result<AnnotationConfigurationCollection>() != null );
+            return annotationConfigurations.GetOrAdd( modelBuilder, b => new AnnotationConfigurationCollection() );
         }
 
         /// <summary>
@@ -118,11 +112,16 @@
             // apply casing annotation so that configurations can interogate this from the model later
             model.SetAnnotationValue( model, new LowerCamelCaseAnnotation( modelBuilder.IsLowerCamelCaseEnabled() ) );
 
-            ICollection<IAnnotationConfiguration> value;
-            var configurations = annotations.TryRemove( modelBuilder, out value ) ? value : NoConfigurations;
+            AnnotationConfigurationCollection configurations;
+
+            // short-circuit if there's nothing to do
+            if ( !annotationConfigurations.TryRemove( modelBuilder, out configurations ) )
+                return;
 
             foreach ( var configuration in configurations )
                 configuration.Apply( model );
+
+            configurations.Clear();
         }
 
         /// <summary>
@@ -153,7 +152,7 @@
         /// <returns>The <see cref="MediaTypeConfiguration{TEntityType}">configuration</see> that can be used to further configure the media type.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the entity.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the entity. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
@@ -165,10 +164,11 @@
 
             // an entity that represents a media type can only have a single link entry. check for presense of an existing configuration.
             var builder = configuration.GetModelBuilder();
-            var mediaTypeConfig = builder.GetAnnotationConfigurations().OfType<MediaTypeConfiguration<TEntityType>>().FirstOrDefault();
+            var configurations = builder.GetAnnotationConfigurations();
+            MediaTypeConfiguration<TEntityType> mediaTypeConfig;
 
-            // the media type has already been initialize configured, so just return the existing configuration
-            if ( mediaTypeConfig != null )
+            // if the media type has already been configured, return the existing configuration
+            if ( configurations.TryGet( propertyExpression, out mediaTypeConfig ) )
                 return mediaTypeConfig;
 
             // always ignore the content type property from the entity model and call the build-in MediaType
@@ -176,7 +176,7 @@
             configuration.Ignore( propertyExpression );
             configuration.MediaType();
 
-            // compile the property expression into a lazy-initialized contravariant function
+            // compile the property expression into a lazy-initialized, contravariant function
             // we do this so that we don't have to use reflection later to get the content type
             // nor require the developer to write explicit code to get the value
             var contentType = new Lazy<Func<object, string>>( () =>
@@ -187,7 +187,7 @@
             var annotation = new MediaLinkEntryAnnotation( contentType );
 
             mediaTypeConfig = new MediaTypeConfiguration<TEntityType>( configuration, annotation );
-            builder.GetAnnotationConfigurations().Add( mediaTypeConfig );
+            configurations.Add( propertyExpression, mediaTypeConfig );
 
             return mediaTypeConfig;
         }

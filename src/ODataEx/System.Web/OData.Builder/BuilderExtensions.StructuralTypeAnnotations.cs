@@ -26,11 +26,18 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<PrimitiveInstanceAnnotationConfiguration<TProperty>>() != null );
 
+            var builder = configuration.GetModelBuilder();
+            var configurations = builder.GetAnnotationConfigurations();
+            PrimitiveInstanceAnnotationConfiguration<TProperty> annotationConfig;
+
+            // if the property has already been configured, return the existing configuration
+            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+                return annotationConfig;
+
             // always ignore the annotation property from the entity model
             configuration.Ignore( propertyExpression );
 
             // build an annotation for the property
-            var builder = configuration.GetModelBuilder();
             var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
@@ -40,9 +47,9 @@
             {
                 IsNullable = annotationType.IsNullable()
             };
-            var annotationConfig = new PrimitiveInstanceAnnotationConfiguration<TProperty>( configuration.ToEdmTypeConfiguration(), name, annotation );
 
-            builder.GetAnnotationConfigurations().Add( annotationConfig );
+            annotationConfig = new PrimitiveInstanceAnnotationConfiguration<TProperty>( configuration.ToEdmTypeConfiguration(), name, annotation );
+            configurations.Add( propertyExpression, annotationConfig );
 
             return annotationConfig;
         }
@@ -56,11 +63,18 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<PrimitiveInstanceAnnotationConfiguration<TProperty>>() != null );
 
+            var builder = configuration.GetModelBuilder();
+            var configurations = builder.GetAnnotationConfigurations();
+            PrimitiveInstanceAnnotationConfiguration<TProperty> annotationConfig;
+
+            // if the property has already been configured, return the existing configuration
+            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+                return annotationConfig;
+
             // always ignore the annotation property from the entity model
             configuration.Ignore( propertyExpression );
 
             // build an annotation for the entity property
-            var builder = configuration.GetModelBuilder();
             var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
@@ -71,9 +85,9 @@
                 IsCollection = true,
                 IsNullable = annotationType.IsNullable()
             };
-            var annotationConfig = new PrimitiveInstanceAnnotationConfiguration<TProperty>( configuration.ToEdmTypeConfiguration(), name, annotation );
 
-            builder.GetAnnotationConfigurations().Add( annotationConfig );
+            annotationConfig = new PrimitiveInstanceAnnotationConfiguration<TProperty>( configuration.ToEdmTypeConfiguration(), name, annotation );
+            configurations.Add( propertyExpression, annotationConfig );
 
             return annotationConfig;
         }
@@ -85,10 +99,10 @@
         /// <typeparam name="T">The annotation <see cref="Type">type</see>.</typeparam>
         /// <param name="configuration">The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> to add annotations to.</param>
         /// <param name="propertyExpression">The <see cref="Expression{TDelegate}">expression</see> for the property that represents the annotation.</param>
-        /// <returns>The original <see cref="StructuralTypeConfiguration{TStructuralType}">entity type configuration</see>.</returns>
+        /// <returns>A <see cref="PrimitiveInstanceAnnotationConfiguration{T}">configuration</see> object that can be used to further configure the annotation.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
         public static PrimitiveInstanceAnnotationConfiguration<T> HasAnnotation<TStructuralType, T>( this StructuralTypeConfiguration<TStructuralType> configuration, Expression<Func<TStructuralType, T>> propertyExpression )
             where TStructuralType : class
@@ -101,10 +115,10 @@
         /// <typeparam name="T">The annotation <see cref="Type">type</see>.</typeparam>
         /// <param name="configuration">The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> to add annotations to.</param>
         /// <param name="propertyExpression">The <see cref="Expression{TDelegate}">expression</see> for the property that represents the annotation.</param>
-        /// <returns>The original <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see>.</returns>
+        /// <returns>A <see cref="PrimitiveInstanceAnnotationConfiguration{T}">configuration</see> object that can be used to further configure the annotation.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
         public static PrimitiveInstanceAnnotationConfiguration<T> HasAnnotations<TStructuralType, T>( this StructuralTypeConfiguration<TStructuralType> configuration, Expression<Func<TStructuralType, IEnumerable<T>>> propertyExpression )
             where TStructuralType : class
@@ -118,10 +132,10 @@
         /// <typeparam name="T">The annotation <see cref="Type">type</see>.</typeparam>
         /// <param name="configuration">The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> to add annotations to.</param>
         /// <param name="propertyExpression">The <see cref="Expression{TDelegate}">expression</see> for the property that represents the annotation.</param>
-        /// <returns>The original <see cref="StructuralTypeConfiguration{TStructuralType}">entity type configuration</see>.</returns>
+        /// <returns>A <see cref="PrimitiveInstanceAnnotationConfiguration{T}">configuration</see> object that can be used to further configure the annotation.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
         public static PrimitiveInstanceAnnotationConfiguration<T?> HasAnnotation<TStructuralType, T>( this StructuralTypeConfiguration<TStructuralType> configuration, Expression<Func<TStructuralType, T?>> propertyExpression )
             where TStructuralType : class
@@ -133,10 +147,10 @@
         /// <typeparam name="TStructuralType">The structural <see cref="Type">type</see> to annotate.</typeparam>
         /// <param name="configuration">The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> to add annotations to.</param>
         /// <param name="propertyExpression">The <see cref="Expression{TDelegate}">expression</see> for the property that represents the annotation.</param>
-        /// <returns>The original <see cref="StructuralTypeConfiguration{TStructuralType}">entity type configuration</see>.</returns>
+        /// <returns>A <see cref="PrimitiveInstanceAnnotationConfiguration{T}">configuration</see> object that can be used to further configure the annotation.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
         public static PrimitiveInstanceAnnotationConfiguration<string> HasAnnotation<TStructuralType>( this StructuralTypeConfiguration<TStructuralType> configuration, Expression<Func<TStructuralType, string>> propertyExpression )
             where TStructuralType : class => configuration.HasPrimitiveAnnotation( propertyExpression );
@@ -147,10 +161,10 @@
         /// <typeparam name="TStructuralType">The structural <see cref="Type">type</see> to annotate.</typeparam>
         /// <param name="configuration">The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> to add annotations to.</param>
         /// <param name="propertyExpression">The <see cref="Expression{TDelegate}">expression</see> for the property that represents the annotation.</param>
-        /// <returns>The original <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see>.</returns>
+        /// <returns>A <see cref="PrimitiveInstanceAnnotationConfiguration{T}">configuration</see> object that can be used to further configure the annotation.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
         public static PrimitiveInstanceAnnotationConfiguration<string> HasAnnotations<TStructuralType>( this StructuralTypeConfiguration<TStructuralType> configuration, Expression<Func<TStructuralType, IEnumerable<string>>> propertyExpression )
             where TStructuralType : class => configuration.HasPrimitiveAnnotations( propertyExpression );
@@ -162,10 +176,10 @@
         /// <typeparam name="TProperty">The <see cref="Type">type</see> of value being annotated.</typeparam>
         /// <param name="configuration">The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> to add annotations to.</param>
         /// <param name="propertyExpression">The <see cref="Expression{TDelegate}">expression</see> for the property that represents the annotation.</param>
-        /// <returns>A <see cref="ComplexTypeConfiguration{TComplexType}">complex type configuration</see> for the annotation.</returns>
+        /// <returns>A <see cref="ComplexTypeInstanceAnnotationConfiguration{TComplexType}">configuration</see> object that can be used to further configure the annotation.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
@@ -180,6 +194,14 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<ComplexTypeInstanceAnnotationConfiguration<TProperty>>() != null );
 
+            var builder = configuration.GetModelBuilder();
+            var configurations = builder.GetAnnotationConfigurations();
+            ComplexTypeInstanceAnnotationConfiguration<TProperty> annotationConfig;
+
+            // if the property has already been configured, return the existing configuration
+            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+                return annotationConfig;
+
             var annotationType = typeof( TProperty );
 
             // ensure this isn't a collection; must use HasAnnotations instead
@@ -192,7 +214,6 @@
             // build an annotation for the entity property
             var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
-            var builder = configuration.GetModelBuilder();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
             var annotationTypeConfig = builder.ComplexType<TProperty>();
             var annotation = new InstanceAnnotation( accessor, qualifiedName, annotationTypeConfig.ToEdmTypeConfiguration() )
@@ -200,9 +221,9 @@
                 IsComplex = true,
                 IsNullable = true
             };
-            var annotationConfig = new ComplexTypeInstanceAnnotationConfiguration<TProperty>( configuration.ToEdmTypeConfiguration(), name, annotationTypeConfig, annotation );
 
-            builder.GetAnnotationConfigurations().Add( annotationConfig );
+            annotationConfig = new ComplexTypeInstanceAnnotationConfiguration<TProperty>( configuration.ToEdmTypeConfiguration(), name, annotationTypeConfig, annotation );
+            configurations.Add( propertyExpression, annotationConfig );
 
             return annotationConfig;
         }
@@ -214,10 +235,10 @@
         /// <typeparam name="TProperty">The <see cref="Type">type</see> of value being annotated.</typeparam>
         /// <param name="configuration">The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> to add annotations to.</param>
         /// <param name="propertyExpression">The <see cref="Expression{TDelegate}">expression</see> for the property that represents the annotation.</param>
-        /// <returns>A <see cref="ComplexTypeConfiguration{TComplexType}">complex type configuration</see> for the annotation.</returns>
+        /// <returns>A <see cref="ComplexTypeInstanceAnnotationConfiguration{TComplexType}">configuration</see> object that can be used to further configure the annotation.</returns>
         /// <remarks>The property represented by the <paramref name="propertyExpression">expression</paramref> will be
         /// <see cref="StructuralTypeConfiguration{TStructuralType}.Ignore{TProperty}(Expression{Func{TStructuralType, TProperty}})">ignored</see>
-        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type.</remarks>
+        /// since the data will appear as an annotation (e.g. metadata) instead of as part of the structural type. This method can be called multiple times for the same property.</remarks>
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
@@ -232,6 +253,14 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<ComplexTypeInstanceAnnotationConfiguration<TProperty>>() != null );
 
+            var builder = configuration.GetModelBuilder();
+            var configurations = builder.GetAnnotationConfigurations();
+            ComplexTypeInstanceAnnotationConfiguration<TProperty> annotationConfig;
+
+            // if the property has already been configured, return the existing configuration
+            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+                return annotationConfig;
+
             var annotationType = typeof( TProperty );
 
             // ensure a nested collection hasn't been specified
@@ -242,7 +271,6 @@
             configuration.Ignore( propertyExpression );
 
             // build an annotation for the entity property
-            var builder = configuration.GetModelBuilder();
             var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
@@ -253,9 +281,9 @@
                 IsCollection = true,
                 IsNullable = true
             };
-            var annotationConfig = new ComplexTypeInstanceAnnotationConfiguration<TProperty>( configuration.ToEdmTypeConfiguration(), name, annotationTypeConfig, annotation );
 
-            builder.GetAnnotationConfigurations().Add( annotationConfig );
+            annotationConfig = new ComplexTypeInstanceAnnotationConfiguration<TProperty>( configuration.ToEdmTypeConfiguration(), name, annotationTypeConfig, annotation );
+            configurations.Add( propertyExpression, annotationConfig );
 
             return annotationConfig;
         }
