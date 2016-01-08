@@ -196,6 +196,7 @@
             var seoTerms = ( (IEnumerable<object>) json["@unit.test.seoTerms"] ).Select( o => o.ToString() );
             var link = ( (IEnumerable<dynamic>) json["@unit.test.links"] ).Single();
             var birthday = (DateTime) json["age@unit.test.birthday"];
+            var displayStyle = (dynamic) json["firstName@unit.test.displayStyle"];
 
             // assert
             Assert.Equal( OK, response.StatusCode );
@@ -206,6 +207,8 @@
             Assert.Equal( "receipt", (string) link.name );
             Assert.Equal( "http://remote/api/receipts(67b4e997-e004-4521-b87d-b8b4693a8043)", (string) link.url );
             Assert.Equal( new DateTime( 2006, 1, 7 ), birthday );
+            Assert.Equal( true, (bool) displayStyle.title );
+            Assert.Equal( 1, (int) displayStyle.order );
         }
     }
 }

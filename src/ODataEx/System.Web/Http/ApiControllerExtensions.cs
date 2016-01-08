@@ -6,6 +6,8 @@
     using IO;
     using Linq;
     using Microsoft.OData.Core;
+    using More;
+    using More.Web.OData;
     using Net;
     using Net.Http;
     using Net.Http.Headers;
@@ -19,6 +21,8 @@
     /// </summary>
     public static class ApiControllerExtensions
     {
+        private static byte[] EmptyContent = new byte[0];
+
         /// <summary>
         /// Returns HTTP status code 200 (OK) for the specified query results.
         /// </summary>
@@ -91,6 +95,18 @@
         /// Returns HTTP status code 200 (OK) or 206 (Partial Content) if the client requested the "Range" header and the range can be satisfied.
         /// </summary>
         /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
+        /// <param name="content">The binary content to return.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> for the specified <paramref name="content"/>.</returns>
+        /// <remarks>This method will return HTTP status code 416 (Requested Range Not Satisfiable) if the client specifies an invalid range. The
+        /// media type associated with the stream is always "application/octet-stream".</remarks>
+        [SuppressMessage( "Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by the response." )]
+        public static IHttpActionResult SuccessOrPartialContent( this ApiController controller, byte[] content ) =>
+            controller.SuccessOrPartialContent( new MemoryStream( content ?? EmptyContent, false ), new MediaTypeHeaderValue( Octet ) );
+
+        /// <summary>
+        /// Returns HTTP status code 200 (OK) or 206 (Partial Content) if the client requested the "Range" header and the range can be satisfied.
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
         /// <param name="stream">The <see cref="Stream">stream</see> to return.</param>
         /// <returns>The <see cref="IHttpActionResult">response</see> for the specified <paramref name="stream"/>.</returns>
         /// <remarks>This method will return HTTP status code 416 (Requested Range Not Satisfiable) if the client specifies an invalid range. The
@@ -102,13 +118,38 @@
         /// Returns HTTP status code 200 (OK) or 206 (Partial Content) if the client requested the "Range" header and the range can be satisfied.
         /// </summary>
         /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
+        /// <param name="content">The binary content to return.</param>
+        /// <param name="mediaType">The media content type associated with the content.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> for the specified <paramref name="content"/>.</returns>
+        /// <remarks>This method will return HTTP status code 416 (Requested Range Not Satisfiable) if the client specifies an invalid range.</remarks>
+        [SuppressMessage( "Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by the response." )]
+        public static IHttpActionResult SuccessOrPartialContent( this ApiController controller, byte[] content, string mediaType ) =>
+            controller.SuccessOrPartialContent( new MemoryStream( content ?? EmptyContent, false ), new MediaTypeHeaderValue( mediaType.OrWhenNullOrEmpty( Octet ) ) );
+
+        /// <summary>
+        /// Returns HTTP status code 200 (OK) or 206 (Partial Content) if the client requested the "Range" header and the range can be satisfied.
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
         /// <param name="stream">The <see cref="Stream">stream</see> to return.</param>
         /// <param name="mediaType">The media content type associated with the stream.</param>
         /// <returns>The <see cref="IHttpActionResult">response</see> for the specified <paramref name="stream"/>.</returns>
-        /// <remarks>This method will return HTTP status code 416 (Requested Range Not Satisfiable) if the client specifies an invalid range. The
-        /// media type associated with the stream is always "application/octet-stream".</remarks>
+        /// <remarks>This method will return HTTP status code 416 (Requested Range Not Satisfiable) if the client specifies an invalid range.</remarks>
         public static IHttpActionResult SuccessOrPartialContent( this ApiController controller, Stream stream, string mediaType ) =>
-            controller.SuccessOrPartialContent( stream, new MediaTypeHeaderValue( mediaType ) );
+            controller.SuccessOrPartialContent( stream, new MediaTypeHeaderValue( mediaType.OrWhenNullOrEmpty( Octet ) ) );
+        
+        /// <summary>
+        /// Returns HTTP status code 200 (OK) or 206 (Partial Content) if the client requested the "Range" header and the range can be satisfied.
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
+        /// <param name="content">The binary content to return.</param>
+        /// <param name="mediaType">The content <see cref="MediaTypeHeaderValue">media type</see>.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> for the specified <paramref name="content"/>.</returns>
+        /// <remarks>This method will return HTTP status code 416 (Requested Range Not Satisfiable) if the client specifies an invalid range.</remarks>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        [SuppressMessage( "Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by the response." )]
+        public static IHttpActionResult SuccessOrPartialContent( this ApiController controller, byte[] content, MediaTypeHeaderValue mediaType ) =>
+            controller.SuccessOrPartialContent( new MemoryStream( content ?? EmptyContent, false ), mediaType );
 
         /// <summary>
         /// Returns HTTP status code 200 (OK) or 206 (Partial Content) if the client requested the "Range" header and the range can be satisfied.
@@ -171,6 +212,50 @@
             // change status code if the entire stream was requested
             if ( response.Content.Headers.ContentLength.Value == partialStream.Length )
                 response.StatusCode = HttpStatusCode.OK;
+
+            return new ResponseMessageResult( response );
+        }
+
+        /// <summary>
+        /// Returns HTTP status code 200 (OK) with the specified values for the Content-Length and Content-Type headers.
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
+        /// <param name="contentLength">The length of the content.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> result.</returns>
+        /// <remarks>This method is typically used as the response to a HTTP HEAD request where the content headers should be returned without any content.
+        /// This method always indicates that the media type is "application/octect-stream". This method also returns the Accept-Ranges header with a value
+        /// of "bytes", which indicates the client can request partial content. Service authors can implement this behavior using any of the
+        /// <see cref="SuccessOrPartialContent(ApiController, Stream, string)"/> methods when returning content.</remarks>
+        [SuppressMessage( "Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by the caller." )]
+        public static IHttpActionResult OkWithContentHeaders( this ApiController controller, long contentLength ) =>
+            OkWithContentHeaders( controller, contentLength, Octet );
+
+        /// <summary>
+        /// Returns HTTP status code 200 (OK) with the specified values for the Content-Length and Content-Type headers.
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
+        /// <param name="contentLength">The length of the content.</param>
+        /// <param name="mediaType">The media type of the content. If this parameter is <c>null</c> or empty, then "application/octect-stream"
+        /// will be assumed.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> result.</returns>
+        /// <remarks>This method is typically used as the response to a HTTP HEAD request where the content headers should be returned without any content.
+        /// This method also returns the Accept-Ranges header with a value of "bytes", which indicates the client can request partial content. Service authors
+        /// can implement this behavior using any of the <see cref="SuccessOrPartialContent(ApiController, Stream, string)"/> methods when returning content.</remarks>
+        [SuppressMessage( "Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by the caller." )]
+        public static IHttpActionResult OkWithContentHeaders( this ApiController controller, long contentLength, string mediaType )
+        {
+            Arg.NotNull( controller, nameof( controller ) );
+            Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
+            Arg.GreaterThanOrEqualTo( contentLength, 0L, nameof( contentLength ) );
+
+            // note: use an empty stream so that web api reports the correct "content-length" header
+            // if you try to directly set content-length without content, it will always update to zero
+            var response = new HttpResponseMessage( HttpStatusCode.OK );
+            var content = new StreamContent( new EmptyStream( contentLength ) );
+
+            content.Headers.ContentType = new MediaTypeHeaderValue( mediaType.OrWhenNullOrEmpty( Octet ) );
+            response.Headers.AcceptRanges.Add( "bytes" );
+            response.Content = content;
 
             return new ResponseMessageResult( response );
         }

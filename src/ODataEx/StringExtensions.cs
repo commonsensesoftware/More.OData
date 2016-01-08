@@ -13,6 +13,8 @@
 
         internal static string Invariant( FormattableString formattable ) => formattable.ToString( InvariantCulture );
 
+        internal static string OrWhenNullOrEmpty( this string @string, string fallback ) => string.IsNullOrEmpty( @string ) ? fallback : @string;
+
         internal static string ToCamelCase( this string @string )
         {
             if ( string.IsNullOrEmpty( @string ) )
