@@ -187,6 +187,7 @@
     <Compile Include="System.Web\Http\ApiControllerExtensions.cs" />
     <Compile Include="System.Web\Http\HttpConfigurationExtensions.cs" />
     <Compile Include="System.Web\Http\HttpRequestMessageExtensions.cs" />
+    <Compile Include="System.Web\OData.Builder\AnnotationConfigurationCollection.cs" />
     <Compile Include="System.Web\OData.Builder\BuilderExtensions.cs" />
     <Compile Include="System.Web\OData.Builder\BuilderExtensions.StructuralTypeAnnotations.cs" />
     <Compile Include="System.Web\OData.Builder\BuilderExtensions.PropertyAnnotations.cs" />
