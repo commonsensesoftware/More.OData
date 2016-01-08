@@ -32,7 +32,7 @@
         }
 
         /// <summary>
-        /// Applies annotation configurations to the specified EDM model.
+        /// Applies the configuration to the specified EDM model.
         /// </summary>
         /// <param name="model">The <see cref="IEdmModel">EDM model</see> to apply the configuration to.</param>
         void Apply( IEdmModel model );

@@ -32,7 +32,10 @@
                         "Doe"
                     },
                     Timestamp = new DateTimeOffset( new DateTime( 2016, 1, 4 ) ),
-                    Flags = 42
+                    Flags = 42,
+                    Age = 10,
+                    Birthday = new DateTimeOffset( new DateTime( 2006, 1, 7 ) ),
+                    DisplayStyle = new DisplayStyle( true, 1 )
                 },
                 new Person()
                 {
@@ -50,7 +53,9 @@
                     {
                         "Bill"
                     },
-                    Timestamp = new DateTimeOffset( new DateTime( 2016, 1, 4 ) )
+                    Timestamp = new DateTimeOffset( new DateTime( 2016, 1, 4 ) ),
+                    Age = 10,
+                    Birthday = new DateTimeOffset( new DateTime( 2006, 1, 7 ) )
                 }
             }.AsQueryable();
         }

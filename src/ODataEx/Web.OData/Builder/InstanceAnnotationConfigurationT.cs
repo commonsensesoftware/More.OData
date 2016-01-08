@@ -11,21 +11,21 @@
     using static More.StringExtensions;
 
     /// <summary>
-    /// Represents the configuration for a property instance annotation.
+    /// Represents the configuration for an instance annotation.
     /// </summary>
-    /// <typeparam name="TStructuralType"></typeparam>
-    public class PropertyInstanceAnnotationConfiguration<TStructuralType> : InstanceAnnotationConfiguration where TStructuralType : class
+    /// <typeparam name="TStructuralType">The declaring structural <see cref="Type">type</see>.</typeparam>
+    public class InstanceAnnotationConfiguration<TStructuralType> : InstanceAnnotationConfiguration where TStructuralType : class
     {
         private readonly StructuralTypeConfiguration<TStructuralType> configuration;
         private readonly InstanceAnnotation annotation;
 
         /// <summary>
-        /// Instantiates a new instance of the <see cref="PropertyInstanceAnnotationConfiguration{TStructuralType}"/> class.
+        /// Instantiates a new instance of the <see cref="InstanceAnnotationConfiguration{TStructuralType}"/> class.
         /// </summary>
         /// <param name="configuration">The associated <see cref="StructuralTypeConfiguration{TStructuralType}">configuration</see>.</param>
         /// <param name="name">The name of the annotation.</param>
         /// <param name="annotation">The <see cref="InstanceAnnotation">annotation</see> to configure.</param>
-        public PropertyInstanceAnnotationConfiguration( StructuralTypeConfiguration<TStructuralType> configuration, string name, InstanceAnnotation annotation )
+        public InstanceAnnotationConfiguration( StructuralTypeConfiguration<TStructuralType> configuration, string name, InstanceAnnotation annotation )
             : base( configuration?.ToEdmTypeConfiguration(), name )
         {
             Arg.NotNull( configuration, nameof( configuration ) );
@@ -36,10 +36,23 @@
         }
 
         /// <summary>
+        /// Gets the annotation associated with the configuration.
+        /// </summary>
+        /// <value>The <see cref="InstanceAnnotation">instance annotation</see> to configure.</value>
+        protected InstanceAnnotation Annotation
+        {
+            get
+            {
+                Contract.Ensures( annotation != null );
+                return annotation;
+            }
+        }
+
+        /// <summary>
         /// Gets the configured target property.
         /// </summary>
         /// <value>The target <see cref="StructuralPropertyConfiguration">property configuration</see>. The default value is <c>null</c>.</value>
-        /// <remarks>This property is always <c>null</c> until one of the property mapping methods is invoked.</remarks>
+        /// <remarks>This property is always <c>null</c> until the configuration is configured for another property.</remarks>
         protected StructuralPropertyConfiguration TargetProperty
         {
             get;
@@ -47,10 +60,10 @@
         }
 
         /// <summary>
-        /// Gets the structural type configuration the configuration is associated with.
+        /// Gets the structural type configuration that this configuration is declared by.
         /// </summary>
-        /// <value>The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> associated with the current configuration.</value>
-        public StructuralTypeConfiguration<TStructuralType> StructuralType
+        /// <value>The <see cref="StructuralTypeConfiguration{TStructuralType}">structural type configuration</see> that this configuration is declared by.</value>
+        public StructuralTypeConfiguration<TStructuralType> DeclaringType
         {
             get
             {
@@ -142,21 +155,30 @@
             TargetProperty = configuration.ComplexProperty( propertyExpression );
         }
 
-        /// <summary>
-        /// Applies annotation configurations to the specified EDM model.
-        /// </summary>
-        /// <param name="model">The <see cref="IEdmModel">EDM model</see> to apply the configuration to.</param>
-        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
-        [SuppressMessage( "Microsoft.Contracts", "CC1055", Justification = "Enforced by abstract contract" )]
-        protected override void Apply( IEdmModel model )
+        private void ApplyToStructuralType( IEdmModel model )
         {
-            Arg.NotNull( model, nameof( model ) );
+            Contract.Requires( model != null );
 
-            var targetProperty = TargetProperty;
+            var entityType = model.FindDeclaredType( StructuralTypeName );
 
-            // we don't know which property to apply the annotation to
-            if ( targetProperty == null )
+            if ( entityType == null )
                 return;
+
+            // aggregate all property annotations for a given entity type
+            var annotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( entityType ) ?? new HashSet<InstanceAnnotation>( InstanceAnnotationComparer.Instance );
+            var qualifiedName = Invariant( $"{Namespace}.{Name}" );
+
+            // update the qualified name as needed and add the annotation/term
+            annotation.QualifiedName = model.IsLowerCamelCaseEnabled() ? qualifiedName.ToCamelCase() : qualifiedName;
+            annotations.Add( annotation );
+            model.SetAnnotationValue( entityType, annotations );
+            model.AddTerm( this, annotation, "EntityType ComplexType" );
+        }
+
+        private void ApplyToStructuralProperty( IEdmModel model, StructuralPropertyConfiguration targetProperty )
+        {
+            Contract.Requires( model != null );
+            Contract.Requires( targetProperty != null );
 
             var structuralType = model.FindDeclaredType( StructuralTypeName ) as IEdmStructuredType;
 
@@ -175,10 +197,27 @@
             var qualifiedName = Invariant( $"{Namespace}.{Name}" );
 
             // update the qualified name as needed and add the annotation/term
-            annotation.QualifiedName = model.IsLowerCamelCaseEnabled() ? qualifiedName.ToCamelCase() : qualifiedName;
-            annotations.Add( annotation );
+            Annotation.QualifiedName = model.IsLowerCamelCaseEnabled() ? qualifiedName.ToCamelCase() : qualifiedName;
+            annotations.Add( Annotation );
             model.SetAnnotationValue( property, annotations );
-            model.AddTerm( this, annotation, "Property" );
+            model.AddTerm( this, Annotation, "Property" );
+        }
+
+        /// <summary>
+        /// Applies the configuration to the specified EDM model.
+        /// </summary>
+        /// <param name="model">The <see cref="IEdmModel">EDM model</see> to apply the configuration to.</param>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        protected override void Apply( IEdmModel model )
+        {
+            Arg.NotNull( model, nameof( model ) );
+
+            var targetProperty = TargetProperty;
+
+            if ( targetProperty == null )
+                ApplyToStructuralType( model );
+            else
+                ApplyToStructuralProperty( model, targetProperty );
         }
     }
 }

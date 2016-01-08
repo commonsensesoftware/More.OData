@@ -15,7 +15,7 @@
     /// </summary>
     public class InstanceAnnotationSerializationFeature : IODataSerializationFeature
     {
-        private IEnumerable<ODataComplexValue> GetComplexValues( object value, ODataComplexTypeSerializer complexSerializer, IEdmComplexTypeReference complexType, ODataSerializerContext serializerContext )
+        private static IEnumerable<ODataComplexValue> GetComplexValues( object value, ODataComplexTypeSerializer complexSerializer, IEdmComplexTypeReference complexType, ODataSerializerContext serializerContext )
         {
             Contract.Requires( complexSerializer != null );
             Contract.Requires( complexType != null );
@@ -30,7 +30,7 @@
                 yield return complexSerializer.CreateODataComplexValue( graph, complexType, serializerContext );
         }
 
-        private ODataValue GetComplexValue( InstanceAnnotation entryAnnotation, object annotation, IEdmModel model, ODataComplexTypeSerializer complexSerializer, ODataSerializerContext serializerContext )
+        private static ODataValue GetComplexValue( InstanceAnnotation entryAnnotation, object annotation, IEdmModel model, ODataComplexTypeSerializer complexSerializer, ODataSerializerContext serializerContext )
         {
             Contract.Requires( entryAnnotation != null );
             Contract.Requires( annotation != null );
@@ -73,7 +73,46 @@
             return new ODataCollectionValue() { Items = items, TypeName = typeName };
         }
 
-        private void AddAnnotations( ODataEntrySerializationContext context, IEdmModel model, IEdmEntityType entityType, object instance, ODataSerializerContext serializerContext )
+        private static void AddAnnotations(
+            IEdmModel model,
+            ODataComplexTypeSerializer complexSerializer,
+            ODataSerializerContext serializerContext,
+            object instance,
+            IEnumerable<InstanceAnnotation> modelAnnotations,
+            ICollection<ODataInstanceAnnotation> instanceAnnotations )
+        {
+            Contract.Requires( model != null );
+            Contract.Requires( complexSerializer != null );
+            Contract.Requires( serializerContext != null );
+            Contract.Requires( instance != null );
+            Contract.Requires( modelAnnotations != null );
+            Contract.Requires( instanceAnnotations != null );
+
+            foreach ( var modelAnnotation in modelAnnotations )
+            {
+                // get the annotation value for the entity instance
+                var annotation = modelAnnotation.GetValue( instance );
+
+                // skip annotation of there is nothing to serialize
+                if ( annotation == null )
+                    continue;
+
+                // serialize as primitive or complex type
+                var value = modelAnnotation.IsComplex ?
+                            GetComplexValue( modelAnnotation, annotation, model, complexSerializer, serializerContext ) :
+                            GetPrimitiveValue( modelAnnotation, annotation, model );
+
+                // skip annotation which cannot be rendered; this should only occur from incorrectly configured annotations
+                if ( value == null )
+                    continue;
+
+                // add the instance annotation to the current entry
+                var instanceAnnotation = new ODataInstanceAnnotation( modelAnnotation.QualifiedName, value );
+                instanceAnnotations.Add( instanceAnnotation );
+            }
+        }
+
+        private static void AddAnnotations( ODataEntrySerializationContext context, IEdmModel model, IEdmEntityType entityType, object instance, ODataSerializerContext serializerContext )
         {
             Contract.Requires( context != null );
             Contract.Requires( model != null );
@@ -81,37 +120,22 @@
             Contract.Requires( instance != null );
             Contract.Requires( serializerContext != null );
 
-            // get all entry annotations for the entity
-            var entryAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( entityType );
-
-            // short-circuit if there are no annotations
-            if ( entryAnnotations == null )
-                return;
-
             var entry = context.Entry;
             var complexSerializer = context.ComplexTypeSerializer;
+            var entryAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( entityType );
 
-            foreach ( var entryAnnotation in entryAnnotations )
+            // add entity instance annotations
+            if ( entryAnnotations != null )
+                AddAnnotations( model, complexSerializer, serializerContext, instance, entryAnnotations, entry.InstanceAnnotations );
+
+            // add property instance annotations
+            foreach ( var property in entry.Properties )
             {
-                // get the annotation value for the entity instance
-                var annotation = entryAnnotation.GetValue( instance );
+                var propertyType = entityType.FindProperty( property.Name );
+                var propertyAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( propertyType );
 
-                // skip annotation of there is nothing to serialize
-                if ( annotation == null )
-                    continue;
-
-                // serialize as primitive or complex type
-                var value = entryAnnotation.IsComplex ?
-                            GetComplexValue( entryAnnotation, annotation, model, complexSerializer, serializerContext ) :
-                            GetPrimitiveValue( entryAnnotation, annotation, model );
-
-                // skip annotation which cannot be rendered; this should only occur from incorrectly configured annotations
-                if ( value == null )
-                    continue;
-
-                // add the instance annotation to the current entry
-                var instanceAnnotation = new ODataInstanceAnnotation( entryAnnotation.QualifiedName, value );
-                entry.InstanceAnnotations.Add( instanceAnnotation );
+                if ( propertyAnnotations != null )
+                    AddAnnotations( model, complexSerializer, serializerContext, instance, propertyAnnotations, property.InstanceAnnotations );
             }
         }
 

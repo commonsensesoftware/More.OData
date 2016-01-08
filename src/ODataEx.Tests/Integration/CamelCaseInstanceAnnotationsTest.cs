@@ -34,6 +34,8 @@
             person.HasComplexAnnotations( p => p.Links );
             person.Ignore( p => p.PhotoImage );
             person.Ignore( p => p.PhotoImageType );
+            person.HasAnnotation( p => p.Birthday ).ForProperty( p => p.Age );
+            person.HasComplexAnnotation( p => p.DisplayStyle ).ForProperty( p => p.FirstName );
 
             var model = builder.GetEdmModelWithAnnotations();
 
@@ -133,6 +135,49 @@
             Assert.Equal( "http://remote/api/receipts(67b4e997-e004-4521-b87d-b8b4693a8043)", (string) link.url );
         }
 
+        [Fact( DisplayName = "http get should return entity with primitive property instance annotation" )]
+        public async Task HttpGetShouldReturnEntityWithPrimitivePropertyInstanceAnnotation()
+        {
+            // arrange
+            var includedAnnotations = "odata.include-annotations=unit.test.birthday";
+            var request = NewGetRequest( "api/people(1)" );
+
+            request.Headers.Add( "prefer", includedAnnotations );
+
+            // act
+            var response = await SendAsync( request );
+            var preferenceApplied = response.Headers.GetValues( "preference-applied" ).Single();
+            var json = await response.Content.ReadAsAsync<IDictionary<string, object>>();
+            var birthday = (DateTime) json["age@unit.test.birthday"];
+
+            // assert
+            Assert.Equal( OK, response.StatusCode );
+            Assert.Equal( includedAnnotations, preferenceApplied );
+            Assert.Equal( new DateTime( 2006, 1, 7 ), birthday );
+        }
+
+        [Fact( DisplayName = "http get should return entity with complex property instance annotation" )]
+        public async Task HttpGetShouldReturnEntityWithComplexPropertyInstanceAnnotation()
+        {
+            // arrange
+            var includedAnnotations = "odata.include-annotations=unit.test.displayStyle";
+            var request = NewGetRequest( "api/people(1)" );
+
+            request.Headers.Add( "prefer", includedAnnotations );
+
+            // act
+            var response = await SendAsync( request );
+            var preferenceApplied = response.Headers.GetValues( "preference-applied" ).Single();
+            var json = await response.Content.ReadAsAsync<IDictionary<string, object>>();
+            var displayStyle = (dynamic) json["firstName@unit.test.displayStyle"];
+
+            // assert
+            Assert.Equal( OK, response.StatusCode );
+            Assert.Equal( includedAnnotations, preferenceApplied );
+            Assert.Equal( true, (bool) displayStyle.title );
+            Assert.Equal( 1, (int) displayStyle.order );
+        }
+
         [Fact( DisplayName = "http get should return entity with all instance annotations" )]
         public async Task HttpGetShouldReturnEntityWithAllInstanceAnnotations()
         {
@@ -150,6 +195,7 @@
             var flags = Convert.ToInt32( json["@unit.test.flags"] );
             var seoTerms = ( (IEnumerable<object>) json["@unit.test.seoTerms"] ).Select( o => o.ToString() );
             var link = ( (IEnumerable<dynamic>) json["@unit.test.links"] ).Single();
+            var birthday = (DateTime) json["age@unit.test.birthday"];
 
             // assert
             Assert.Equal( OK, response.StatusCode );
@@ -159,6 +205,7 @@
             Assert.True( seoTerms.SequenceEqual( new[] { "Doe" } ) );
             Assert.Equal( "receipt", (string) link.name );
             Assert.Equal( "http://remote/api/receipts(67b4e997-e004-4521-b87d-b8b4693a8043)", (string) link.url );
+            Assert.Equal( new DateTime( 2006, 1, 7 ), birthday );
         }
     }
 }

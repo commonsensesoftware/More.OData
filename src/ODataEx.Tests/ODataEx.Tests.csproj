@@ -102,6 +102,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Integration\CamelCaseInstanceAnnotationsTest.cs" />
+    <Compile Include="Integration\DisplayStyle.cs" />
     <Compile Include="Integration\WebApiUnitTest.cs" />
     <Compile Include="Integration\InstanceAnnotationsTest.cs" />
     <Compile Include="Integration\MediaResourceTest.cs" />

@@ -28,12 +28,14 @@
 
             person.Namespace = builder.Namespace;
             person.HasKey( p => p.Id );
+            person.MediaType( p => p.PhotoImageType );
             person.Ignore( p => p.Flags );
             person.Ignore( p => p.Timestamp );
             person.Ignore( p => p.SeoTerms );
             person.Ignore( p => p.Links );
             person.Ignore( p => p.PhotoImage );
-            person.MediaType( p => p.PhotoImageType );
+            person.Ignore( p => p.Birthday );
+            person.Ignore( p => p.DisplayStyle );
 
             var model = builder.GetEdmModelWithAnnotations();
 

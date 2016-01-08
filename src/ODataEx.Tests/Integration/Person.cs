@@ -57,5 +57,23 @@
             get;
             set;
         }
+
+        public byte Age
+        {
+            get;
+            set;
+        }
+
+        public DateTimeOffset Birthday
+        {
+            get;
+            set;
+        }
+
+        public DisplayStyle DisplayStyle
+        {
+            get;
+            set;
+        }
     }
 }
