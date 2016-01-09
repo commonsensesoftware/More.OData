@@ -1,26 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-  <metadata minClientVersion="2.5">
-    <id>$id$</id>
-    <version>$version$</version>
-    <authors>Chris Martinez</authors>
-    <owners>$author$</owners>
-    <title>More - OData with ASP.NET Web API</title>
-    <description>$description$</description>
-    <summary>Provides "More" extensions for creating OData v4.0 endpoints with ASP.NET Web API.</summary>
-    <releaseNotes></releaseNotes>
-    <language>en-US</language>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <licenseUrl>https://raw.githubusercontent.com/commonsensesoftware/More.OData/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/commonsensesoftware/more.odata</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/commonsensesoftware/More.OData/master/src/More.png</iconUrl>
-    <tags>More OData ASP.NET Web API</tags>
-    <copyright>$author$</copyright>
-    <dependencies>
-      <dependency id="Microsoft.AspNet.OData" version="5.7.0" />
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="bin\$configuration$\CodeContracts\$id$.Contracts.dll" target="lib\net45\CodeContracts" />
-  </files>
+ <metadata minClientVersion="2.5">
+  <id>$id$</id>
+  <version>$version$</version>
+  <authors>Chris Martinez</authors>
+  <owners>$author$</owners>
+  <title>More - OData with ASP.NET Web API</title>
+  <description>$description$</description>
+  <summary>Provides "More" extensions for creating OData v4.0 endpoints with ASP.NET Web API.</summary>
+  <releaseNotes></releaseNotes>
+  <language>en-US</language>
+  <requireLicenseAcceptance>true</requireLicenseAcceptance>
+  <licenseUrl>https://raw.githubusercontent.com/commonsensesoftware/More.OData/master/LICENSE</licenseUrl>
+  <projectUrl>https://github.com/commonsensesoftware/more.odata</projectUrl>
+  <iconUrl>https://raw.githubusercontent.com/commonsensesoftware/More.OData/master/src/More.png</iconUrl>
+  <tags>More OData ASP.NET Web API</tags>
+  <copyright>$author$</copyright>
+  <references>
+   <reference file="$id$.dll" />
+  </references>
+  <dependencies>
+   <dependency id="Microsoft.AspNet.OData" version="5.7.0" />
+  </dependencies>
+ </metadata>
+ <files>
+  <file src="bin\$configuration$\CodeContracts\$id$.Contracts.dll" target="lib\net45\CodeContracts" />
+ </files>
 </package>

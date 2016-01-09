@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Receipt>
+ <Date>2013-10-24T00:00:00.0000000-07:00</Date>
+ <Name>Proof of purchase</Name>
+ <ReceiptNumber>109505</ReceiptNumber>
+ <Retailer>Acme</Retailer>
+ <ImageType>image/png</ImageType>
+ <ImageSize>104975</ImageSize>
+</Receipt>

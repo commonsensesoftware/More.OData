@@ -1,248 +1,249 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
- <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
- <PropertyGroup>
-  <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-  <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-  <ProjectGuid>{C19CFBC9-250A-40BE-819C-682BAF2702DA}</ProjectGuid>
-  <OutputType>Library</OutputType>
-  <AppDesignerFolder>Properties</AppDesignerFolder>
-  <RootNamespace>More</RootNamespace>
-  <AssemblyName>More.AspNet.OData</AssemblyName>
-  <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-  <FileAlignment>512</FileAlignment>
-  <TargetFrameworkProfile />
-  <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
-  <NuGetPackageImportStamp>
-  </NuGetPackageImportStamp>
- </PropertyGroup>
- <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-  <DebugSymbols>true</DebugSymbols>
-  <DebugType>full</DebugType>
-  <Optimize>false</Optimize>
-  <OutputPath>bin\Debug\</OutputPath>
-  <DefineConstants>DEBUG;TRACE</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-  <WarningLevel>4</WarningLevel>
-  <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-  <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-  <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-  <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-  <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-  <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-  <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
-  <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
-  <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
-  <CodeContractsEnumObligations>True</CodeContractsEnumObligations>
-  <CodeContractsRedundantAssumptions>True</CodeContractsRedundantAssumptions>
-  <CodeContractsAssertsToContractsCheckBox>True</CodeContractsAssertsToContractsCheckBox>
-  <CodeContractsRedundantTests>True</CodeContractsRedundantTests>
-  <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
-  <CodeContractsMissingPublicEnsuresAsWarnings>False</CodeContractsMissingPublicEnsuresAsWarnings>
-  <CodeContractsInferRequires>True</CodeContractsInferRequires>
-  <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
-  <CodeContractsInferEnsuresAutoProperties>True</CodeContractsInferEnsuresAutoProperties>
-  <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
-  <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
-  <CodeContractsSuggestAssumptionsForCallees>False</CodeContractsSuggestAssumptionsForCallees>
-  <CodeContractsSuggestRequires>False</CodeContractsSuggestRequires>
-  <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
-  <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
-  <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
-  <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-  <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
-  <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-  <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-  <CodeContractsCustomRewriterAssembly />
-  <CodeContractsCustomRewriterClass />
-  <CodeContractsLibPaths />
-  <CodeContractsExtraRewriteOptions />
-  <CodeContractsExtraAnalysisOptions />
-  <CodeContractsSQLServerOption />
-  <CodeContractsBaseLineFile />
-  <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
-  <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
-  <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
-  <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
-  <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-  <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-  <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-  <RunCodeAnalysis>true</RunCodeAnalysis>
-  <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  <DocumentationFile>bin\Debug\More.AspNet.OData.xml</DocumentationFile>
-  <UseVSHostingProcess>true</UseVSHostingProcess>
- </PropertyGroup>
- <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-  <DebugType>pdbonly</DebugType>
-  <Optimize>true</Optimize>
-  <OutputPath>bin\Release\</OutputPath>
-  <DefineConstants>TRACE</DefineConstants>
-  <ErrorReport>prompt</ErrorReport>
-  <WarningLevel>4</WarningLevel>
-  <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-  <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-  <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-  <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-  <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-  <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-  <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
-  <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
-  <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
-  <CodeContractsEnumObligations>True</CodeContractsEnumObligations>
-  <CodeContractsRedundantAssumptions>True</CodeContractsRedundantAssumptions>
-  <CodeContractsAssertsToContractsCheckBox>True</CodeContractsAssertsToContractsCheckBox>
-  <CodeContractsRedundantTests>True</CodeContractsRedundantTests>
-  <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
-  <CodeContractsMissingPublicEnsuresAsWarnings>False</CodeContractsMissingPublicEnsuresAsWarnings>
-  <CodeContractsInferRequires>True</CodeContractsInferRequires>
-  <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
-  <CodeContractsInferEnsuresAutoProperties>True</CodeContractsInferEnsuresAutoProperties>
-  <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
-  <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
-  <CodeContractsSuggestAssumptionsForCallees>False</CodeContractsSuggestAssumptionsForCallees>
-  <CodeContractsSuggestRequires>False</CodeContractsSuggestRequires>
-  <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
-  <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
-  <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
-  <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-  <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
-  <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-  <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-  <CodeContractsCustomRewriterAssembly />
-  <CodeContractsCustomRewriterClass />
-  <CodeContractsLibPaths />
-  <CodeContractsExtraRewriteOptions />
-  <CodeContractsExtraAnalysisOptions />
-  <CodeContractsSQLServerOption />
-  <CodeContractsBaseLineFile />
-  <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
-  <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
-  <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
-  <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
-  <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-  <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-  <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-  <DocumentationFile>bin\Release\More.AspNet.OData.xml</DocumentationFile>
- </PropertyGroup>
- <PropertyGroup>
-  <SignAssembly>true</SignAssembly>
- </PropertyGroup>
- <PropertyGroup>
-  <AssemblyOriginatorKeyFile>..\More.snk</AssemblyOriginatorKeyFile>
- </PropertyGroup>
- <ItemGroup>
-  <Reference Include="Microsoft.OData.Core, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-   <HintPath>..\packages\Microsoft.OData.Core.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Core.dll</HintPath>
-   <Private>True</Private>
-  </Reference>
-  <Reference Include="Microsoft.OData.Edm, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-   <HintPath>..\packages\Microsoft.OData.Edm.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
-   <Private>True</Private>
-  </Reference>
-  <Reference Include="Microsoft.Spatial, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-   <HintPath>..\packages\Microsoft.Spatial.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
-   <Private>True</Private>
-  </Reference>
-  <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-   <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
-   <Private>True</Private>
-  </Reference>
-  <Reference Include="System" />
-  <Reference Include="System.Core" />
-  <Reference Include="System.Net.Http" />
-  <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-   <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-   <Private>True</Private>
-  </Reference>
-  <Reference Include="System.Runtime.Serialization" />
-  <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-   <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
-   <Private>True</Private>
-  </Reference>
-  <Reference Include="System.Web.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-   <HintPath>..\packages\Microsoft.AspNet.OData.5.7.0\lib\net45\System.Web.OData.dll</HintPath>
-   <Private>True</Private>
-  </Reference>
-  <Reference Include="System.Xml.Linq" />
- </ItemGroup>
- <ItemGroup>
-  <Compile Include="..\Arg.cs">
-   <Link>Arg.cs</Link>
-  </Compile>
-  <Compile Include="..\SharedAssemblyInfo.cs">
-   <Link>Properties\SharedAssemblyInfo.cs</Link>
-  </Compile>
-  <Compile Include="ExceptionMessage.Designer.cs">
-   <AutoGen>True</AutoGen>
-   <DesignTime>True</DesignTime>
-   <DependentUpon>ExceptionMessage.resx</DependentUpon>
-  </Compile>
-  <Compile Include="GlobalSuppressions.cs" />
-  <Compile Include="Microsoft.OData.Edm\EdmExtensions.cs" />
-  <Compile Include="OData.Edm\InstanceAnnotation.cs" />
-  <Compile Include="OData.Edm\LowerCamelCaseAnnotation.cs" />
-  <Compile Include="OData.Edm\MediaLinkEntryAnnotation.cs" />
-  <Compile Include="Properties\AssemblyInfo.cs" />
-  <Compile Include="StringExtensions.cs" />
-  <Compile Include="System.Web\Http\ApiControllerExtensions.cs" />
-  <Compile Include="System.Web\Http\HttpConfigurationExtensions.cs" />
-  <Compile Include="System.Web\Http\HttpRequestMessageExtensions.cs" />
-  <Compile Include="System.Web\OData.Builder\AnnotationConfigurationCollection.cs" />
-  <Compile Include="System.Web\OData.Builder\BuilderExtensions.cs" />
-  <Compile Include="System.Web\OData.Builder\BuilderExtensions.HasAnnotations.cs" />
-  <Compile Include="System\FormattableString.cs" />
-  <Compile Include="System\FormattableStringFactory.cs" />
-  <Compile Include="TypeExtensions.cs" />
-  <Compile Include="Web.OData\Builder\InstanceAnnotationConfigurationT.cs" />
-  <Compile Include="Web.OData\Builder\InstanceAnnotationComparer.cs" />
-  <Compile Include="Web.OData\Builder\InstanceAnnotationConfiguration.cs" />
-  <Compile Include="Web.OData\Builder\InstanceAnnotationConfigurationContract.cs" />
-  <Compile Include="Web.OData\Builder\ComplexTypeInstanceAnnotationConfigurationT1T2.cs" />
-  <Compile Include="Web.OData\Builder\IAnnotationConfiguration.cs" />
-  <Compile Include="Web.OData\Builder\IAnnotationConfigurationContract.cs" />
-  <Compile Include="Web.OData\Builder\MediaTypeConfigurationT.cs" />
-  <Compile Include="Web.OData\Builder\StructuralTypeConfigurationExtensions.cs" />
-  <Compile Include="Web.OData\EmptyStream.cs" />
-  <Compile Include="Web.OData\Formatter\EdmHelper.cs" />
-  <Compile Include="Web.OData\Formatter\FeaturedODataEntityTypeSerializer.cs" />
-  <Compile Include="Web.OData\Formatter\FeaturedODataSerializerProvider.cs" />
-  <Compile Include="Web.OData\Formatter\InstanceAnnotationSerializationFeature.cs" />
-  <Compile Include="Web.OData\Formatter\IODataSerializationFeature.cs" />
-  <Compile Include="Web.OData\Formatter\IODataSerializationFeatureContract.cs" />
-  <Compile Include="Web.OData\Formatter\MediaResourceSerializationFeature.cs" />
-  <Compile Include="Web.OData\Formatter\ODataEntrySerializationContext.cs" />
-  <Compile Include="Web.OData\Link.cs" />
-  <Compile Include="Web.OData\Routing\RawValueRoutingConvention.cs" />
-  <Compile Include="Web.OData\SimplePreferenceAppliedHandler.cs" />
- </ItemGroup>
- <ItemGroup>
-  <None Include="..\More.snk">
-   <Link>More.snk</Link>
-  </None>
-  <None Include="odataex.nuspec" />
-  <None Include="packages.config" />
- </ItemGroup>
- <ItemGroup>
-  <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
-   <Link>CustomDictionary.xml</Link>
-  </CodeAnalysisDictionary>
- </ItemGroup>
- <ItemGroup>
-  <EmbeddedResource Include="ExceptionMessage.resx">
-   <Generator>ResXFileCodeGenerator</Generator>
-   <LastGenOutput>ExceptionMessage.Designer.cs</LastGenOutput>
-  </EmbeddedResource>
- </ItemGroup>
- <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
- <Import Project="..\fileversion.targets" />
- <Import Project="..\packages\More.Build.Tasks.NuGet.1.0.1\build\dotnet\More.Build.Tasks.NuGet.targets" Condition="Exists('..\packages\More.Build.Tasks.NuGet.1.0.1\build\dotnet\More.Build.Tasks.NuGet.targets')" />
- <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-   <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C19CFBC9-250A-40BE-819C-682BAF2702DA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>More</RootNamespace>
+    <AssemblyName>More.AspNet.OData</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
-  <Error Condition="!Exists('..\packages\More.Build.Tasks.NuGet.1.0.1\build\dotnet\More.Build.Tasks.NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\More.Build.Tasks.NuGet.1.0.1\build\dotnet\More.Build.Tasks.NuGet.targets'))" />
- </Target>
- <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>True</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>True</CodeContractsRedundantAssumptions>
+    <CodeContractsAssertsToContractsCheckBox>True</CodeContractsAssertsToContractsCheckBox>
+    <CodeContractsRedundantTests>True</CodeContractsRedundantTests>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsMissingPublicEnsuresAsWarnings>False</CodeContractsMissingPublicEnsuresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferEnsuresAutoProperties>True</CodeContractsInferEnsuresAutoProperties>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestAssumptionsForCallees>False</CodeContractsSuggestAssumptionsForCallees>
+    <CodeContractsSuggestRequires>False</CodeContractsSuggestRequires>
+    <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\More.AspNet.OData.xml</DocumentationFile>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>True</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>True</CodeContractsRedundantAssumptions>
+    <CodeContractsAssertsToContractsCheckBox>True</CodeContractsAssertsToContractsCheckBox>
+    <CodeContractsRedundantTests>True</CodeContractsRedundantTests>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsMissingPublicEnsuresAsWarnings>False</CodeContractsMissingPublicEnsuresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferEnsuresAutoProperties>True</CodeContractsInferEnsuresAutoProperties>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestAssumptionsForCallees>False</CodeContractsSuggestAssumptionsForCallees>
+    <CodeContractsSuggestRequires>False</CodeContractsSuggestRequires>
+    <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <DocumentationFile>bin\Release\More.AspNet.OData.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\More.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.OData.Core, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.OData.Core.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.OData.Edm, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.OData.Edm.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Spatial, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Spatial.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.OData.5.7.0\lib\net45\System.Web.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Arg.cs">
+      <Link>Arg.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="ExceptionMessage.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessage.resx</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Microsoft.OData.Edm\EdmExtensions.cs" />
+    <Compile Include="OData.Edm\InstanceAnnotation.cs" />
+    <Compile Include="OData.Edm\LowerCamelCaseAnnotation.cs" />
+    <Compile Include="OData.Edm\MediaLinkEntryAnnotation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringExtensions.cs" />
+    <Compile Include="System.Web\Http\ApiControllerExtensions.cs" />
+    <Compile Include="System.Web\Http\HttpConfigurationExtensions.cs" />
+    <Compile Include="System.Web\Http\HttpRequestMessageExtensions.cs" />
+    <Compile Include="System.Web\OData.Builder\AnnotationConfigurationCollection.cs" />
+    <Compile Include="System.Web\OData.Builder\BuilderExtensions.cs" />
+    <Compile Include="System.Web\OData.Builder\BuilderExtensions.HasAnnotations.cs" />
+    <Compile Include="System.Web\OData.Builder\EntitySetConfigurationExtensions.cs" />
+    <Compile Include="System\FormattableString.cs" />
+    <Compile Include="System\FormattableStringFactory.cs" />
+    <Compile Include="TypeExtensions.cs" />
+    <Compile Include="Web.OData\Builder\InstanceAnnotationConfigurationT.cs" />
+    <Compile Include="Web.OData\Builder\InstanceAnnotationComparer.cs" />
+    <Compile Include="Web.OData\Builder\InstanceAnnotationConfiguration.cs" />
+    <Compile Include="Web.OData\Builder\InstanceAnnotationConfigurationContract.cs" />
+    <Compile Include="Web.OData\Builder\ComplexTypeInstanceAnnotationConfigurationT1T2.cs" />
+    <Compile Include="Web.OData\Builder\IAnnotationConfiguration.cs" />
+    <Compile Include="Web.OData\Builder\IAnnotationConfigurationContract.cs" />
+    <Compile Include="Web.OData\Builder\MediaTypeConfigurationT.cs" />
+    <Compile Include="Web.OData\Builder\StructuralTypeConfigurationExtensions.cs" />
+    <Compile Include="Web.OData\EmptyStream.cs" />
+    <Compile Include="Web.OData\Formatter\EdmHelper.cs" />
+    <Compile Include="Web.OData\Formatter\FeaturedODataEntityTypeSerializer.cs" />
+    <Compile Include="Web.OData\Formatter\FeaturedODataSerializerProvider.cs" />
+    <Compile Include="Web.OData\Formatter\InstanceAnnotationSerializationFeature.cs" />
+    <Compile Include="Web.OData\Formatter\IODataSerializationFeature.cs" />
+    <Compile Include="Web.OData\Formatter\IODataSerializationFeatureContract.cs" />
+    <Compile Include="Web.OData\Formatter\MediaResourceSerializationFeature.cs" />
+    <Compile Include="Web.OData\Formatter\ODataEntrySerializationContext.cs" />
+    <Compile Include="Web.OData\Link.cs" />
+    <Compile Include="Web.OData\Routing\RawValueRoutingConvention.cs" />
+    <Compile Include="Web.OData\SimplePreferenceAppliedHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\More.snk">
+      <Link>More.snk</Link>
+    </None>
+    <None Include="odataex.nuspec" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ExceptionMessage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\fileversion.targets" />
+  <Import Project="..\packages\More.Build.Tasks.NuGet.1.0.1\build\dotnet\More.Build.Tasks.NuGet.targets" Condition="Exists('..\packages\More.Build.Tasks.NuGet.1.0.1\build\dotnet\More.Build.Tasks.NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\More.Build.Tasks.NuGet.1.0.1\build\dotnet\More.Build.Tasks.NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\More.Build.Tasks.NuGet.1.0.1\build\dotnet\More.Build.Tasks.NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
