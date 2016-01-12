@@ -22,8 +22,12 @@
 
             builder.Namespace = "Test";
 
+            var address = builder.ComplexType<Address>();
             var people = builder.EntitySet<Person>( "People" );
             var person = people.EntityType;
+
+            address.Namespace = builder.Namespace;
+            address.HasAnnotation( a => a.IsPrimary );
 
             person.Namespace = builder.Namespace;
             person.HasKey( p => p.Id );
@@ -176,6 +180,28 @@
             Assert.Equal( 1, (int) displayStyle.Order );
         }
 
+        [Fact( DisplayName = "http get should return entity with complex value with primitive instance annotation" )]
+        public async Task HttpGetShouldReturnEntityWithComplexValueWithPrimitiveInstanceAnnotation()
+        {
+            // arrange
+            var includedAnnotations = "odata.include-annotations=Test.IsPrimary";
+            var request = NewGetRequest( "api/People(1)" );
+
+            request.Headers.Add( "prefer", includedAnnotations );
+
+            // act
+            var response = await SendAsync( request );
+            var preferenceApplied = response.Headers.GetValues( "preference-applied" ).Single();
+            var json = await response.Content.ReadAsAsync<IDictionary<string, object>>();
+            var address = ( (IEnumerable<dynamic>) json["Addresses"] ).First();
+            var value = address["@Test.IsPrimary"];
+
+            // assert
+            Assert.Equal( OK, response.StatusCode );
+            Assert.Equal( includedAnnotations, preferenceApplied );
+            Assert.True( (bool) value );
+        }
+
         [Fact( DisplayName = "http get should return entity with all instance annotations" )]
         public async Task HttpGetShouldReturnEntityWithAllInstanceAnnotations()
         {
@@ -196,6 +222,7 @@
             var link = ( (IEnumerable<dynamic>) json["@Test.Links"] ).Single();
             var birthday = (DateTime) json["Age@Test.Birthday"];
             var displayStyle = (dynamic) json["FirstName@Test.DisplayStyle"];
+            var hasPrimaryAddress = (bool) ( (IEnumerable<dynamic>) json["Addresses"] ).First()["@Test.IsPrimary"];
 
             // assert
             Assert.Equal( OK, response.StatusCode );
@@ -208,6 +235,7 @@
             Assert.Equal( new DateTime( 2006, 1, 7 ), birthday );
             Assert.Equal( true, (bool) displayStyle.Title );
             Assert.Equal( 1, (int) displayStyle.Order );
+            Assert.True( hasPrimaryAddress );
         }
     }
 }

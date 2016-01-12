@@ -184,7 +184,7 @@
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
         [SuppressMessage( "Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Justification = "The name derives from the property expression by default. This would otherwise require 2x methods." )]
         public static ComplexTypeInstanceAnnotationConfiguration<TStructuralType, TProperty> HasComplexAnnotation<TStructuralType, TProperty>(
-            this EntityTypeConfiguration<TStructuralType> configuration,
+            this StructuralTypeConfiguration<TStructuralType> configuration,
             Expression<Func<TStructuralType, TProperty>> propertyExpression )
             where TStructuralType : class
             where TProperty : class
@@ -243,7 +243,7 @@
         [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
         [SuppressMessage( "Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Justification = "The name derives from the property expression by default. This would otherwise require 2x methods." )]
         public static ComplexTypeInstanceAnnotationConfiguration<TStructuralType, TProperty> HasComplexAnnotations<TStructuralType, TProperty>(
-            this EntityTypeConfiguration<TStructuralType> configuration,
+            this StructuralTypeConfiguration<TStructuralType> configuration,
             Expression<Func<TStructuralType, IEnumerable<TProperty>>> propertyExpression )
             where TStructuralType : class
             where TProperty : class

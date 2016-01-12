@@ -1,4 +1,5 @@
-﻿namespace More.Web.OData.Formatter
+﻿using System.Diagnostics.Contracts;
+namespace More.Web.OData.Formatter
 {
     using Microsoft.OData.Core;
     using Microsoft.OData.Edm;
@@ -108,6 +109,19 @@
             }
         }
 
+        private static IEdmStructuredType GetStructuredType( IEdmElement element )
+        {
+            Contract.Requires( element != null );
+            Contract.Ensures( Contract.Result<IEdmStructuredType>() != null );
+
+            var type = element as IEdmStructuredType;
+
+            if ( type == null )
+                return (IEdmStructuredType) ( (IEdmStructuredTypeReference) element ).Definition;
+
+            return type;
+        }
+
         /// <summary>
         /// Applies the serialization feature to the specified OData feed using the provided context.
         /// </summary>
@@ -144,7 +158,7 @@
                 return;
 
             var model = context.SerializerContext.Model;
-            var entityType = (IEdmStructuredType) context.EdmElement;
+            var entityType = GetStructuredType( context.EdmElement );
             var entryAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( entityType );
 
             // add entity instance annotations
@@ -175,7 +189,7 @@
             Arg.NotNull( context, nameof( context ) );
 
             var model = context.SerializerContext.Model;
-            var complexType = (IEdmStructuredType) context.EdmElement;
+            var complexType = GetStructuredType( context.EdmElement );
             var complexTypeAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( complexType );
 
             // add complex type instance annotations

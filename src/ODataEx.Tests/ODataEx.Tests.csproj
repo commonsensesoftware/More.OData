@@ -101,6 +101,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Integration\Address.cs" />
     <Compile Include="Integration\CamelCaseInstanceAnnotationsTest.cs" />
     <Compile Include="Integration\DisplayStyle.cs" />
     <Compile Include="Integration\WebApiUnitTest.cs" />

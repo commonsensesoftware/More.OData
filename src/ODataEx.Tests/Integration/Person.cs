@@ -75,5 +75,10 @@
             get;
             set;
         }
+
+        public IList<Address> Addresses
+        {
+            get;
+        } = new List<Address>();
     }
 }

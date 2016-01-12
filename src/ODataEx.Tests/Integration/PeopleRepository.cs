@@ -35,7 +35,12 @@
                     Flags = 42,
                     Age = 10,
                     Birthday = new DateTimeOffset( new DateTime( 2006, 1, 7 ) ),
-                    DisplayStyle = new DisplayStyle( true, 1 )
+                    DisplayStyle = new DisplayStyle( true, 1 ),
+                    Addresses =
+                    {
+                        new Address() { Street = "123 Some Place", City = "Redmond", State = "WA", Zip = "98052", IsPrimary = true },
+                        new Address() { Street = "456 Another Place", City = "Seattle", State = "WA", Zip = "98001" }
+                    }
                 },
                 new Person()
                 {
