@@ -26,8 +26,6 @@
         /// Gets a list of serialization features for the serializer.
         /// </summary>
         /// <value>A <see cref="IList{T}">list</see> of <see cref="IODataSerializationFeature">serialization features</see>.</value>
-        /// <remarks>The default list of serialization features include the <see cref="InstanceAnnotationSerializationFeature"/>
-        /// and the <see cref="MediaResourceSerializationFeature"/>.</remarks>
         public IList<IODataSerializationFeature> SerializationFeatures
         {
             get;
