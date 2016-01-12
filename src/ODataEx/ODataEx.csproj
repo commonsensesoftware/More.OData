@@ -205,6 +205,7 @@
     <Compile Include="Web.OData\Builder\StructuralTypeConfigurationExtensions.cs" />
     <Compile Include="Web.OData\EmptyStream.cs" />
     <Compile Include="Web.OData\Formatter\EdmHelper.cs" />
+    <Compile Include="Web.OData\Formatter\EntityInstanceContextExtensions.cs" />
     <Compile Include="Web.OData\Formatter\FeaturedODataComplexTypeSerializer.cs" />
     <Compile Include="Web.OData\Formatter\FeaturedODataEntityTypeSerializer.cs" />
     <Compile Include="Web.OData\Formatter\FeaturedODataFeedSerializer.cs" />
@@ -213,8 +214,7 @@
     <Compile Include="Web.OData\Formatter\IODataSerializationFeature.cs" />
     <Compile Include="Web.OData\Formatter\IODataSerializationFeatureContract.cs" />
     <Compile Include="Web.OData\Formatter\MediaResourceSerializationFeature.cs" />
-    <Compile Include="Web.OData\Formatter\ODataEntrySerializationContext.cs" />
-    <Compile Include="Web.OData\Formatter\ODataSerializationFeatureCollection.cs" />
+    <Compile Include="Web.OData\Formatter\ODataSerializationFeatureContext.cs" />
     <Compile Include="Web.OData\Link.cs" />
     <Compile Include="Web.OData\Routing\RawValueRoutingConvention.cs" />
     <Compile Include="Web.OData\SimplePreferenceAppliedHandler.cs" />

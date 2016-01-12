@@ -15,20 +15,15 @@
         private readonly FeaturedODataFeedSerializer feedSerializer;
         private readonly FeaturedODataEntityTypeSerializer entityTypeSerializer;
         private readonly FeaturedODataComplexTypeSerializer complexTypeSerializer;
-        private readonly ODataSerializationFeatureCollection serializationFeatures;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeaturedODataSerializerProvider"/> class.
         /// </summary>
         public FeaturedODataSerializerProvider()
         {
-            feedSerializer = new FeaturedODataFeedSerializer( this );
-            entityTypeSerializer = new FeaturedODataEntityTypeSerializer( this );
-            complexTypeSerializer = new FeaturedODataComplexTypeSerializer( this );
-            serializationFeatures = new ODataSerializationFeatureCollection(
-                feedSerializer.SerializationFeatures,
-                entityTypeSerializer.SerializationFeatures,
-                complexTypeSerializer.SerializationFeatures );
+            feedSerializer = new FeaturedODataFeedSerializer( this, SerializationFeatures );
+            entityTypeSerializer = new FeaturedODataEntityTypeSerializer( this, SerializationFeatures );
+            complexTypeSerializer = new FeaturedODataComplexTypeSerializer( this, SerializationFeatures );
         }
 
         /// <summary>
@@ -37,12 +32,8 @@
         /// <value>A <see cref="IList{T}">list</see> of <see cref="IODataSerializationFeature">serialization features</see>.</value>
         public IList<IODataSerializationFeature> SerializationFeatures
         {
-            get
-            {
-                Contract.Ensures( Contract.Result<IList<IODataSerializationFeature>>() != null );
-                return serializationFeatures;
-            }
-        }
+            get;
+        } = new List<IODataSerializationFeature>();
 
         /// <summary>
         /// Returns the serializer for the given type.

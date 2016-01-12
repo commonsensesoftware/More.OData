@@ -12,12 +12,27 @@
     public class MediaResourceSerializationFeature : IODataSerializationFeature
     {
         /// <summary>
-        /// Applies the serialization feature using the provided context.
+        /// Applies the serialization feature to the specified OData feed using the provided context.
         /// </summary>
-        /// <param name="context">The <see cref="ODataEntrySerializationContext"/> used to apply feature-specific serialization.</param>
-        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
-        public virtual void Apply( ODataEntrySerializationContext context )
+        /// <param name="feed">The <see cref="ODataFeed"/> to apply the serialization feature to.</param>
+        /// <param name="context">The <see cref="ODataSerializationFeatureContext"/> used to apply feature-specific serialization.</param>
+        /// <remarks>The default implementation does not apply any additional serialization features.</remarks>
+        public virtual void Apply( ODataFeed feed, ODataSerializationFeatureContext context )
         {
+            Arg.NotNull( feed, nameof( feed ) );
+            Arg.NotNull( context, nameof( context ) );
+        }
+
+        /// <summary>
+        /// Applies the serialization feature to the specified OData entry using the provided context.
+        /// </summary>
+        /// <param name="entry">The <see cref="ODataEntry"/> to apply the serialization feature to.</param>
+        /// <param name="context">The <see cref="ODataSerializationFeatureContext"/> used to apply feature-specific serialization.</param>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
+        public virtual void Apply( ODataEntry entry, ODataSerializationFeatureContext context )
+        {
+            Arg.NotNull( entry, nameof( entry ) );
             Arg.NotNull( context, nameof( context ) );
 
             var entityContext = context.EntityInstanceContext;
@@ -27,13 +42,11 @@
             if ( !entityType.HasStream )
                 return;
 
-            var serializerContext = entityContext.SerializerContext;
-
-            // if no metadata was requested or we're inside a projection (e.g. $select), we don't build a reference
-            if ( serializerContext.MetadataLevel == NoMetadata || serializerContext.SelectExpandClause != null )
+            // if no metadata was requested, we don't build a reference
+            if ( entityContext.SerializerContext.MetadataLevel == NoMetadata )
                 return;
 
-            var instance = entityContext.EntityInstance;
+            var instance = entityContext.TryGetEntityInstance();
 
             // must have an entity in order to generate a MLE
             if ( instance == null )
@@ -64,7 +77,19 @@
                 ETag = annotation.GenerateETag?.Invoke( entityContext )
             };
 
-            context.Entry.MediaResource = mediaResource;
+            entry.MediaResource = mediaResource;
+        }
+
+        /// <summary>
+        /// Applies the serialization feature to the specified OData complex value using the provided context.
+        /// </summary>
+        /// <param name="complexValue">The <see cref="ODataComplexValue"/> to apply the serialization feature to.</param>
+        /// <param name="context">The <see cref="ODataSerializationFeatureContext"/> used to apply feature-specific serialization.</param>
+        /// <remarks>The default implementation does not apply any additional serialization features.</remarks>
+        public virtual void Apply( ODataComplexValue complexValue, ODataSerializationFeatureContext context )
+        {
+            Arg.NotNull( complexValue, nameof( complexValue ) );
+            Arg.NotNull( context, nameof( context ) );
         }
     }
 }

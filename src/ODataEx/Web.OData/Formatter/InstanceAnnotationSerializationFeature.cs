@@ -73,20 +73,16 @@
             return new ODataCollectionValue() { Items = items, TypeName = typeName };
         }
 
-        private static void AddAnnotations(
-            IEdmModel model,
-            ODataComplexTypeSerializer complexSerializer,
-            ODataSerializerContext serializerContext,
-            object instance,
-            IEnumerable<InstanceAnnotation> modelAnnotations,
-            ICollection<ODataInstanceAnnotation> instanceAnnotations )
+        private static void AddAnnotations( ODataSerializationFeatureContext context, IEnumerable<InstanceAnnotation> modelAnnotations, ICollection<ODataInstanceAnnotation> instanceAnnotations )
         {
-            Contract.Requires( model != null );
-            Contract.Requires( complexSerializer != null );
-            Contract.Requires( serializerContext != null );
-            Contract.Requires( instance != null );
+            Contract.Requires( context != null );
             Contract.Requires( modelAnnotations != null );
             Contract.Requires( instanceAnnotations != null );
+
+            var instance = context.Instance;
+            var model = context.SerializerContext.Model;
+            var complexTypeSerializer = context.ComplexTypeSerializer;
+            var serializerContext = context.SerializerContext;
 
             foreach ( var modelAnnotation in modelAnnotations )
             {
@@ -99,7 +95,7 @@
 
                 // serialize as primitive or complex type
                 var value = modelAnnotation.IsComplex ?
-                            GetComplexValue( modelAnnotation, annotation, model, complexSerializer, serializerContext ) :
+                            GetComplexValue( modelAnnotation, annotation, model, complexTypeSerializer, serializerContext ) :
                             GetPrimitiveValue( modelAnnotation, annotation, model );
 
                 // skip annotation which cannot be rendered; this should only occur from incorrectly configured annotations
@@ -112,21 +108,48 @@
             }
         }
 
-        private static void AddAnnotations( ODataEntrySerializationContext context, IEdmModel model, IEdmEntityType entityType, object instance, ODataSerializerContext serializerContext )
+        /// <summary>
+        /// Applies the serialization feature to the specified OData feed using the provided context.
+        /// </summary>
+        /// <param name="feed">The <see cref="ODataFeed"/> to apply the serialization feature to.</param>
+        /// <param name="context">The <see cref="ODataSerializationFeatureContext"/> used to apply feature-specific serialization.</param>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
+        public virtual void Apply( ODataFeed feed, ODataSerializationFeatureContext context )
         {
-            Contract.Requires( context != null );
-            Contract.Requires( model != null );
-            Contract.Requires( entityType != null );
-            Contract.Requires( instance != null );
-            Contract.Requires( serializerContext != null );
+            Arg.NotNull( feed, nameof( feed ) );
+            Arg.NotNull( context, nameof( context ) );
 
-            var entry = context.Entry;
-            var complexSerializer = context.ComplexTypeSerializer;
+            var model = context.SerializerContext.Model;
+            var annotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( context.EdmElement );
+
+            if ( annotations != null )
+                AddAnnotations( context, annotations, feed.InstanceAnnotations );
+        }
+
+        /// <summary>
+        /// Applies the serialization feature to the specified OData entry using the provided context.
+        /// </summary>
+        /// <param name="entry">The <see cref="ODataEntry"/> to apply the serialization feature to.</param>
+        /// <param name="context">The <see cref="ODataSerializationFeatureContext"/> used to apply feature-specific serialization.</param>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
+        public virtual void Apply( ODataEntry entry, ODataSerializationFeatureContext context )
+        {
+            Arg.NotNull( entry, nameof( entry ) );
+            Arg.NotNull( context, nameof( context ) );
+
+            // note: currently no way to add annotations inside a projection (e.g. $select)
+            if ( context.Instance == null )
+                return;
+
+            var model = context.SerializerContext.Model;
+            var entityType = (IEdmStructuredType) context.EdmElement;
             var entryAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( entityType );
 
             // add entity instance annotations
             if ( entryAnnotations != null )
-                AddAnnotations( model, complexSerializer, serializerContext, instance, entryAnnotations, entry.InstanceAnnotations );
+                AddAnnotations( context, entryAnnotations, entry.InstanceAnnotations );
 
             // add property instance annotations
             foreach ( var property in entry.Properties )
@@ -135,31 +158,39 @@
                 var propertyAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( propertyType );
 
                 if ( propertyAnnotations != null )
-                    AddAnnotations( model, complexSerializer, serializerContext, instance, propertyAnnotations, property.InstanceAnnotations );
+                    AddAnnotations( context, propertyAnnotations, property.InstanceAnnotations );
             }
         }
 
         /// <summary>
-        /// Applies the serialization feature using the provided context.
+        /// Applies the serialization feature to the specified OData complex value using the provided context.
         /// </summary>
-        /// <param name="context">The <see cref="ODataEntrySerializationContext"/> used to apply feature-specific serialization.</param>
+        /// <param name="complexValue">The <see cref="ODataComplexValue"/> to apply the serialization feature to.</param>
+        /// <param name="context">The <see cref="ODataSerializationFeatureContext"/> used to apply feature-specific serialization.</param>
         [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
-        public virtual void Apply( ODataEntrySerializationContext context )
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
+        public virtual void Apply( ODataComplexValue complexValue, ODataSerializationFeatureContext context )
         {
+            Arg.NotNull( complexValue, nameof( complexValue ) );
             Arg.NotNull( context, nameof( context ) );
 
-            var entityContext = context.EntityInstanceContext;
-            var serializerContext = entityContext.SerializerContext;
+            var model = context.SerializerContext.Model;
+            var complexType = (IEdmStructuredType) context.EdmElement;
+            var complexTypeAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( complexType );
 
-            // note: currently no way to build the related links inside a projection (e.g. $select)
-            if ( serializerContext.SelectExpandClause != null )
-                return;
+            // add complex type instance annotations
+            if ( complexTypeAnnotations != null )
+                AddAnnotations( context, complexTypeAnnotations, complexValue.InstanceAnnotations );
 
-            var entityType = entityContext.EntityType;
-            var instance = entityContext.EntityInstance;
+            // add property instance annotations
+            foreach ( var property in complexValue.Properties )
+            {
+                var propertyType = complexType.FindProperty( property.Name );
+                var propertyAnnotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( propertyType );
 
-            if ( entityType != null && instance != null )
-                AddAnnotations( context, entityContext.EdmModel, entityType, instance, serializerContext );
+                if ( propertyAnnotations != null )
+                    AddAnnotations( context, propertyAnnotations, property.InstanceAnnotations );
+            }
         }
     }
 }

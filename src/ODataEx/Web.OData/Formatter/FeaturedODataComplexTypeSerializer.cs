@@ -1,26 +1,42 @@
 ﻿namespace More.Web.OData.Formatter
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Web.OData.Formatter.Serialization;
     using Microsoft.OData.Core;
     using Microsoft.OData.Edm;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Web.OData.Formatter.Serialization;
 
     /// <summary>
     /// Represents a <see cref="ODataComplexTypeSerializer">complex type serializer</see> that supports customizable serialization features.
     /// </summary>
     public class FeaturedODataComplexTypeSerializer : ODataComplexTypeSerializer
     {
+        private readonly ODataComplexTypeSerializer complexSerializer;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FeaturedODataComplexTypeSerializer"/> class.
         /// </summary>
         /// <param name="serializerProvider">The underlying <see cref="ODataSerializerProvider">serializer provider</see>.</param>
-        public FeaturedODataComplexTypeSerializer( ODataSerializerProvider serializerProvider )
+        /// <param name="serializationFeatures">The <see cref="IList{T}">list</see> of <see cref="IODataSerializationFeature">serialization features</see> associated with the serializer.</param>
+        public FeaturedODataComplexTypeSerializer( ODataSerializerProvider serializerProvider, IList<IODataSerializationFeature> serializationFeatures )
             : base( serializerProvider )
         {
+            Arg.NotNull( serializationFeatures, nameof( serializationFeatures ) );
+            complexSerializer = new ODataComplexTypeSerializer( serializerProvider );
+            SerializationFeatures = serializationFeatures;
+        }
+
+        /// <summary>
+        /// Gets the complex type serializer associated with the serializer.
+        /// </summary>
+        /// <value>The associated <see cref="ODataComplexTypeSerializer">complex type serializer</see>.</value>
+        protected ODataComplexTypeSerializer ComplexTypeSerializer
+        {
+            get
+            {
+                Contract.Ensures( complexSerializer != null );
+                return complexSerializer;
+            }
         }
 
         /// <summary>
@@ -30,7 +46,7 @@
         public IList<IODataSerializationFeature> SerializationFeatures
         {
             get;
-        } = new List<IODataSerializationFeature>();
+        }
 
         /// <summary>
         /// Creates and returns an OData complex type value using the specified object graph, tpye, and context.
@@ -42,10 +58,10 @@
         public override ODataComplexValue CreateODataComplexValue( object graph, IEdmComplexTypeReference complexType, ODataSerializerContext writeContext )
         {
             var complexValue = base.CreateODataComplexValue( graph, complexType, writeContext );
-            //var context = new ODataEntrySerializationContext( complexValue, selectExpandNode, entityInstanceContext, complexSerializer );
+            var context = new ODataSerializationFeatureContext( complexType, writeContext, ComplexTypeSerializer ) { Instance = graph };
 
-            //foreach ( var feature in SerializationFeatures )
-            //    feature.Apply( context );
+            foreach ( var feature in SerializationFeatures )
+                feature.Apply( complexValue, context );
 
             return complexValue;
         }
