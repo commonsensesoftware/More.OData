@@ -65,7 +65,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="More.AspNet.OData, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5e67f9a3da787917, processorArchitecture=MSIL">
-      <HintPath>..\packages\More.AspNet.OData.1.0.0-alpha\lib\net45\More.AspNet.OData.dll</HintPath>
+      <HintPath>..\packages\More.AspNet.OData.1.0.0\lib\net45\More.AspNet.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="More.Extensions, Version=1.1.0.1, Culture=neutral, PublicKeyToken=5e67f9a3da787917, processorArchitecture=MSIL">

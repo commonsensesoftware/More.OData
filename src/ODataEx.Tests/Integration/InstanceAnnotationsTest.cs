@@ -8,6 +8,7 @@
     using System.Web.Http;
     using System.Web.OData.Builder;
     using System.Web.OData.Extensions;
+    using Web.OData;
     using Xunit;
     using static System.Net.HttpStatusCode;
 
@@ -29,6 +30,9 @@
             address.Namespace = builder.Namespace;
             address.HasAnnotation( a => a.IsPrimary );
 
+            people.HasAnnotation( "Version", 2.0 );
+            people.HasComplexAnnotations( "Links", new[] { new Link( "help", new Uri( "http://localhost/api/help" ) ) } );
+
             person.Namespace = builder.Namespace;
             person.HasKey( p => p.Id );
             person.HasAnnotation( p => p.Timestamp );
@@ -44,6 +48,27 @@
 
             configuration.EnableInstanceAnnotations();
             configuration.MapODataServiceRoute( "odata", "api", model );
+        }
+
+        [Fact( DisplayName = "http get should return entity set with primitive instance annotation" )]
+        public async Task HttpGetShouldReturnEntitySetWithPrimitiveInstanceAnnotation()
+        {
+            // arrange
+            var includedAnnotations = "odata.include-annotations=Test.Version";
+            var request = NewGetRequest( "api/People" );
+
+            request.Headers.Add( "prefer", includedAnnotations );
+
+            // act
+            var response = await SendAsync( request );
+            var preferenceApplied = response.Headers.GetValues( "preference-applied" ).Single();
+            var json = await response.Content.ReadAsAsync<IDictionary<string, object>>();
+            var version = (double) json["@Test.Version"];
+
+            // assert
+            Assert.Equal( OK, response.StatusCode );
+            Assert.Equal( includedAnnotations, preferenceApplied );
+            Assert.Equal( 2d, version );
         }
 
         [Fact( DisplayName = "http get should return entity with primitive instance annotation" )]

@@ -126,10 +126,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Web.OData\Builder\" />
-    <Folder Include="Web.OData\Formatter\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\ODataEx\ODataEx.csproj">
       <Project>{c19cfbc9-250a-40be-819c-682baf2702da}</Project>

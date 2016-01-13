@@ -1,16 +1,9 @@
 ﻿namespace More.Examples
 {
-    using Microsoft.OData.Core;
-    using Microsoft.OData.Core.UriParser;
-    using Microsoft.OData.Edm;
     using Models;
-    using System;
-    using System.Linq.Expressions;
     using System.Web.Http;
-    using System.Web.OData;
     using System.Web.OData.Builder;
     using System.Web.OData.Extensions;
-    using System.Web.OData.Routing;
 
     public static class WebApiConfig
     {
@@ -53,39 +46,6 @@
             receipt.MediaType( r => r.ImageType );
             receipt.Ignore( r => r.ImagePath );
             receipt.Ignore( r => r.ImageSize );
-        }
-    }
-
-    internal static class NavigationLinkExtensions
-    {
-        internal static void HasNavigationPropertyLink<TEntity, TValue>(
-            this EntitySetConfiguration<TEntity> entitySet,
-            NavigationPropertyConfiguration navigationProperty,
-            Expression<Func<TEntity, TValue>> foreignKeyProperty,
-            string targetEntitySetName ) where TEntity : class
-        {
-            var foreignKeyPropertyName = ( (MemberExpression) foreignKeyProperty.Body ).Member.Name;
-
-            entitySet.HasNavigationPropertyLink(
-                navigationProperty,
-                ( context, property ) =>
-                {
-                    var entity = context.EdmObject;
-                    object value;
-
-                    if ( !entity.TryGetPropertyValue( foreignKeyPropertyName, out value ) )
-                        return null;
-
-                    if ( value == null )
-                        return null;
-
-                    var entitySetPath = new EntitySetPathSegment( targetEntitySetName );
-                    var keyValuePath = new KeyValuePathSegment( ODataUriUtils.ConvertToUriLiteral( value, ODataVersion.V4 ) );
-                    var url = new Uri( context.Url.CreateODataLink( entitySetPath, keyValuePath ) );
-
-                    return url;
-                },
-                false );
         }
     }
 }

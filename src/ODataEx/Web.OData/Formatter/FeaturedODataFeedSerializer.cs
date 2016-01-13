@@ -59,7 +59,8 @@
         public override ODataFeed CreateODataFeed( IEnumerable feedInstance, IEdmCollectionTypeReference feedType, ODataSerializerContext writeContext )
         {
             var feed = base.CreateODataFeed( feedInstance, feedType, writeContext );
-            var context = new ODataSerializationFeatureContext( feedType, writeContext, ComplexTypeSerializer ) { Instance = feedInstance };
+            var entitySet = writeContext.Model.EntityContainer.FindEntitySet( writeContext.NavigationSource.Name );
+            var context = new ODataSerializationFeatureContext( entitySet, writeContext, ComplexTypeSerializer ) { Instance = feedInstance };
 
             foreach ( var feature in SerializationFeatures )
                 feature.Apply( feed, context );
