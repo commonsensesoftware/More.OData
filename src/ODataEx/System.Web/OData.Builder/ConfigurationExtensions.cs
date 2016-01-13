@@ -10,12 +10,25 @@
     using Microsoft.OData.Edm;
     using Routing;
     using System;
+    using static Reflection.BindingFlags;
 
     /// <summary>
     /// Provides extension methods for OData configuration objects.
     /// </summary>
-    public static class EntitySetConfigurationExtensions
+    public static class ConfigurationExtensions
     {
+        internal static string GetEntitySetName<TEntity>( this EntitySetConfiguration<TEntity> configuration ) where TEntity : class
+        {
+            Contract.Requires( configuration != null );
+            Contract.Ensures( !string.IsNullOrEmpty( Contract.Result<string>() ) );
+
+            var type = typeof( NavigationSourceConfiguration<TEntity> );
+            var field = type.GetField( "_configuration", Instance | NonPublic );
+            var innerConfig = (NavigationSourceConfiguration) field.GetValue( configuration );
+
+            return innerConfig.Name;
+        }
+
         /// <summary>
         /// Configures the navigation property of an entity in an entity using the specified property expression
         /// and target entity set name.

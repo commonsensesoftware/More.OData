@@ -17,7 +17,6 @@
     public class InstanceAnnotationConfiguration<TStructuralType> : InstanceAnnotationConfiguration where TStructuralType : class
     {
         private readonly StructuralTypeConfiguration<TStructuralType> configuration;
-        private readonly InstanceAnnotation annotation;
 
         /// <summary>
         /// Instantiates a new instance of the <see cref="InstanceAnnotationConfiguration{TStructuralType}"/> class.
@@ -26,26 +25,10 @@
         /// <param name="name">The name of the annotation.</param>
         /// <param name="annotation">The <see cref="InstanceAnnotation">annotation</see> to configure.</param>
         public InstanceAnnotationConfiguration( StructuralTypeConfiguration<TStructuralType> configuration, string name, InstanceAnnotation annotation )
-            : base( configuration?.ToEdmTypeConfiguration(), name )
+            : base( configuration?.ToEdmTypeConfiguration(), name, annotation )
         {
             Arg.NotNull( configuration, nameof( configuration ) );
-            Arg.NotNull( annotation, nameof( annotation ) );
-
             this.configuration = configuration;
-            this.annotation = annotation;
-        }
-
-        /// <summary>
-        /// Gets the annotation associated with the configuration.
-        /// </summary>
-        /// <value>The <see cref="InstanceAnnotation">instance annotation</see> to configure.</value>
-        protected InstanceAnnotation Annotation
-        {
-            get
-            {
-                Contract.Ensures( annotation != null );
-                return annotation;
-            }
         }
 
         /// <summary>
@@ -169,10 +152,10 @@
             var qualifiedName = Invariant( $"{Namespace}.{Name}" );
 
             // update the qualified name as needed and add the annotation/term
-            annotation.QualifiedName = model.IsLowerCamelCaseEnabled() ? qualifiedName.ToCamelCase() : qualifiedName;
-            annotations.Add( annotation );
+            Annotation.QualifiedName = model.IsLowerCamelCaseEnabled() ? qualifiedName.ToCamelCase() : qualifiedName;
+            annotations.Add( Annotation );
             model.SetAnnotationValue( entityType, annotations );
-            model.AddTerm( this, annotation, "EntityType ComplexType" );
+            model.AddTerm( this, Annotation, "EntityType ComplexType" );
         }
 
         private void ApplyToStructuralProperty( IEdmModel model, StructuralPropertyConfiguration targetProperty )

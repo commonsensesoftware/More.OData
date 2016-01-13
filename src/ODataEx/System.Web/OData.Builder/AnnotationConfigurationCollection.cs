@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-namespace System.Web.OData.Builder
+﻿namespace System.Web.OData.Builder
 {
     using Collections;
     using Diagnostics.CodeAnalysis;
@@ -50,8 +49,19 @@ namespace System.Web.OData.Builder
         {
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Arg.NotNull( item, nameof( item ) );
+            Add( CreateKey( propertyExpression ), item );
+        }
 
-            var key = CreateKey( propertyExpression );
+        /// <summary>
+        /// Adds an annotation configuration with the specified key.
+        /// </summary>
+        /// <param name="key">The annotation key.</param>
+        /// <param name="item">The <see cref="IAnnotationConfiguration">annotation configuration</see> to add.</param>
+        /// <remarks>An annotation configuration can only be added for a key once.</remarks>
+        public void Add( string key, IAnnotationConfiguration item )
+        {
+            Arg.NotNullOrEmpty( key, nameof( key ) );
+            Arg.NotNull( item, nameof( item ) );
 
             if ( keyToIndexMap.ContainsKey( key ) )
                 throw new InvalidOperationException( string.Format( CurrentCulture, MultipleAnnotationConfigsNotAllowed, key ) );
@@ -76,10 +86,24 @@ namespace System.Web.OData.Builder
         {
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( ( Contract.Result<bool>() && Contract.ValueAtReturn( out item ) != null ) || Contract.ValueAtReturn( out item ) == null );
+            return TryGet( CreateKey( propertyExpression ), out item );
+        }
+
+        /// <summary>
+        /// Attempts to get the annotation configuration with the specified key.
+        /// </summary>
+        /// <typeparam name="TConfiguration">The <see cref="Type">type</see> of annotation configuration.</typeparam>
+        /// <param name="key">The annotation key.</param>
+        /// <param name="item">The retrieved <see cref="IAnnotationConfiguration">item</see> or <c>null</c>.</param>
+        /// <returns>True if the item is successfully retrieved; otherwise, false.</returns>
+        [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics" )]
+        public bool TryGet<TConfiguration>( string key, out TConfiguration item )
+            where TConfiguration : class, IAnnotationConfiguration
+        {
+            Arg.NotNullOrEmpty( key, nameof( key ) );
+            Contract.Ensures( ( Contract.Result<bool>() && Contract.ValueAtReturn( out item ) != null ) || Contract.ValueAtReturn( out item ) == null );
 
             item = null;
-
-            var key = CreateKey( propertyExpression );
             var index = 0;
 
             if ( !keyToIndexMap.TryGetValue( key, out index ) )

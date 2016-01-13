@@ -1,7 +1,6 @@
 ﻿namespace System.Web.OData.Builder
 {
     using Collections.Concurrent;
-    using Collections.Generic;
     using Diagnostics.CodeAnalysis;
     using Diagnostics.Contracts;
     using Linq;
@@ -21,7 +20,7 @@
     {
         private static readonly Lazy<MethodInfo> applyLowerCamelCase = new Lazy<MethodInfo>( () => typeof( LowerCamelCaser ).GetMethod( nameof( LowerCamelCaser.ApplyLowerCamelCase ) ) );
         private static readonly ConcurrentDictionary<ODataModelBuilder, AnnotationConfigurationCollection> annotationConfigurations = new ConcurrentDictionary<ODataModelBuilder, AnnotationConfigurationCollection>();
-        private static readonly ConcurrentDictionary<object, StructuralTypeConfiguration> configurationToModelBuilderMap = new ConcurrentDictionary<object, StructuralTypeConfiguration>();
+        private static readonly ConcurrentDictionary<object, StructuralTypeConfiguration> structuralTypeConfigToModelBuilderMap = new ConcurrentDictionary<object, StructuralTypeConfiguration>();
 
         private static Lazy<Func<object, object>> ToLazyContravariantFunc<TStructuralType, TProperty>( this Expression<Func<TStructuralType, TProperty>> propertyExpression )
         {
@@ -54,6 +53,17 @@
             return modelCreating?.GetInvocationList().Any( d => d.Method == applyLowerCamelCase.Value ) ?? false;
         }
 
+        private static void ClearModelBuilderMap( ODataModelBuilder modelBuilder )
+        {
+            Contract.Requires( modelBuilder != null );
+
+            var keys = structuralTypeConfigToModelBuilderMap.Select( kvp => kvp.Value.ModelBuilder == modelBuilder ).ToArray();
+            StructuralTypeConfiguration value;
+
+            foreach ( var key in keys )
+                structuralTypeConfigToModelBuilderMap.TryRemove( key, out value );
+        }
+
         internal static StructuralTypeConfiguration GetInnerConfiguration<TStructuralType>( this StructuralTypeConfiguration<TStructuralType> configuration ) where TStructuralType : class
         {
             Contract.Requires( configuration != null );
@@ -61,7 +71,7 @@
 
             // there appears to be no other way to get the underlying model builder
             // note: we can't build a dynamic using a lambda expression, so use a dictionary to minimize reflection use
-            return configurationToModelBuilderMap.GetOrAdd(
+            return structuralTypeConfigToModelBuilderMap.GetOrAdd(
                 configuration,
                 key =>
                 {
@@ -69,6 +79,20 @@
                     var field = type.GetField( "_configuration", Instance | NonPublic );
                     return (StructuralTypeConfiguration) field.GetValue( key );
                 } );
+        }
+
+        /// <summary>
+        /// Returns the model builder associated with the configuration.
+        /// </summary>
+        /// <typeparam name="TStructuralType">The structural <see cref="Type">type</see>.</typeparam>
+        /// <param name="configuration">The <see cref="EntitySetConfiguration{TStructuralType}">configuration</see> to get the model builder for.</param>
+        /// <returns>The associated <see cref="ODataModelBuilder">model builder</see>.</returns>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        public static ODataModelBuilder GetModelBuilder<TStructuralType>( this EntitySetConfiguration<TStructuralType> configuration ) where TStructuralType : class
+        {
+            Arg.NotNull( configuration, nameof( configuration ) );
+            Contract.Ensures( Contract.Result<ODataModelBuilder>() != null );
+            return configuration.EntityType.GetModelBuilder();
         }
 
         /// <summary>
@@ -116,12 +140,15 @@
 
             // short-circuit if there's nothing to do
             if ( !annotationConfigurations.TryRemove( modelBuilder, out configurations ) )
-                return;
+                goto ClearMap;
 
             foreach ( var configuration in configurations )
                 configuration.Apply( model );
 
             configurations.Clear();
+
+            ClearMap:
+            ClearModelBuilderMap( modelBuilder );
         }
 
         /// <summary>

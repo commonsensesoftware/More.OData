@@ -1,6 +1,7 @@
 ﻿namespace More.Web.OData.Builder
 {
     using Microsoft.OData.Edm;
+    using More.OData.Edm;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Web.OData.Builder;
@@ -12,6 +13,7 @@
     public abstract class InstanceAnnotationConfiguration : IAnnotationConfiguration
     {
         private readonly IEdmTypeConfiguration typeConfiguration;
+        private readonly InstanceAnnotation annotation;
         private bool hasNamespaceOverride;
         private string @namespace;
         private string name;
@@ -21,13 +23,29 @@
         /// </summary>
         /// <param name="typeConfiguration">The associated <see cref="IEdmTypeConfiguration">type configuration</see>.</param>
         /// <param name="name">The name of the annotation.</param>
-        protected InstanceAnnotationConfiguration( IEdmTypeConfiguration typeConfiguration, string name )
+        /// <param name="annotation">The <see cref="InstanceAnnotation">annotation</see> to configure.</param>
+        protected InstanceAnnotationConfiguration( IEdmTypeConfiguration typeConfiguration, string name, InstanceAnnotation annotation )
         {
             Arg.NotNull( typeConfiguration, nameof( typeConfiguration ) );
             Arg.NotNullOrEmpty( name, nameof( name ) );
+            Arg.NotNull( annotation, nameof( annotation ) );
 
             this.typeConfiguration = typeConfiguration;
             this.name = name;
+            this.annotation = annotation;
+        }
+
+        /// <summary>
+        /// Gets the annotation associated with the configuration.
+        /// </summary>
+        /// <value>The <see cref="InstanceAnnotation">instance annotation</see> to configure.</value>
+        protected InstanceAnnotation Annotation
+        {
+            get
+            {
+                Contract.Ensures( annotation != null );
+                return annotation;
+            }
         }
 
         /// <summary>

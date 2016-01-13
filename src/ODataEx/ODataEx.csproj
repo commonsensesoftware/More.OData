@@ -194,6 +194,8 @@
     <Compile Include="System\FormattableString.cs" />
     <Compile Include="System\FormattableStringFactory.cs" />
     <Compile Include="TypeExtensions.cs" />
+    <Compile Include="Web.OData\Builder\EntitySetComplexTypeInstanceAnnotationConfigurationT.cs" />
+    <Compile Include="Web.OData\Builder\EntitySetInstanceAnnotationConfiguration.cs" />
     <Compile Include="Web.OData\Builder\InstanceAnnotationConfigurationT.cs" />
     <Compile Include="Web.OData\Builder\InstanceAnnotationComparer.cs" />
     <Compile Include="Web.OData\Builder\InstanceAnnotationConfiguration.cs" />
