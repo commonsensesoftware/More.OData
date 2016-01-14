@@ -97,19 +97,20 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<InstanceAnnotationConfiguration<TStructuralType>>() != null );
 
+            string name;
+            var key = propertyExpression.GetInstanceAnnotationKey( out name );
             var builder = configuration.GetModelBuilder();
             var configurations = builder.GetAnnotationConfigurations();
             InstanceAnnotationConfiguration<TStructuralType> annotationConfig;
 
             // if the property has already been configured, return the existing configuration
-            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+            if ( configurations.TryGet( key, out annotationConfig ) )
                 return annotationConfig;
 
             // always ignore the annotation property from the entity model
-            configuration.Ignore( propertyExpression );
+            propertyExpression.IgnoredBy( configuration );
 
             // build an annotation for the property
-            var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
             var annotationType = typeof( TProperty );
@@ -120,7 +121,7 @@
             };
 
             annotationConfig = new InstanceAnnotationConfiguration<TStructuralType>( configuration, name, annotation );
-            configurations.Add( propertyExpression, annotationConfig );
+            configurations.Add( key, annotationConfig );
 
             return annotationConfig;
         }
@@ -134,19 +135,20 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<InstanceAnnotationConfiguration<TStructuralType>>() != null );
 
+            string name;
+            var key = propertyExpression.GetInstanceAnnotationKey( out name );
             var builder = configuration.GetModelBuilder();
             var configurations = builder.GetAnnotationConfigurations();
             InstanceAnnotationConfiguration<TStructuralType> annotationConfig;
 
             // if the property has already been configured, return the existing configuration
-            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+            if ( configurations.TryGet( key, out annotationConfig ) )
                 return annotationConfig;
 
             // always ignore the annotation property from the entity model
-            configuration.Ignore( propertyExpression );
+            propertyExpression.IgnoredBy( configuration );
 
             // build an annotation for the entity property
-            var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
             var annotationType = typeof( TProperty );
@@ -158,7 +160,7 @@
             };
 
             annotationConfig = new InstanceAnnotationConfiguration<TStructuralType>( configuration, name, annotation );
-            configurations.Add( propertyExpression, annotationConfig );
+            configurations.Add( key, annotationConfig );
 
             return annotationConfig;
         }
@@ -451,12 +453,14 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<ComplexTypeInstanceAnnotationConfiguration<TStructuralType, TProperty>>() != null );
 
+            string name;
+            var key = propertyExpression.GetInstanceAnnotationKey( out name );
             var builder = configuration.GetModelBuilder();
             var configurations = builder.GetAnnotationConfigurations();
             ComplexTypeInstanceAnnotationConfiguration<TStructuralType, TProperty> annotationConfig;
 
             // if the property has already been configured, return the existing configuration
-            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+            if ( configurations.TryGet( key, out annotationConfig ) )
                 return annotationConfig;
 
             var annotationType = typeof( TProperty );
@@ -466,10 +470,9 @@
                 throw new InvalidOperationException( string.Format( CurrentCulture, InvalidComplexType, annotationType ) );
 
             // always ignore the annotation property from the entity model
-            configuration.Ignore( propertyExpression );
+            propertyExpression.IgnoredBy( configuration );
 
             // build an annotation for the entity property
-            var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
             var annotationTypeConfig = builder.ComplexType<TProperty>();
@@ -480,7 +483,7 @@
             };
 
             annotationConfig = new ComplexTypeInstanceAnnotationConfiguration<TStructuralType, TProperty>( configuration, name, annotationTypeConfig, annotation );
-            configurations.Add( propertyExpression, annotationConfig );
+            configurations.Add( key, annotationConfig );
 
             return annotationConfig;
         }
@@ -510,12 +513,14 @@
             Arg.NotNull( propertyExpression, nameof( propertyExpression ) );
             Contract.Ensures( Contract.Result<ComplexTypeInstanceAnnotationConfiguration<TStructuralType, TProperty>>() != null );
 
+            string name;
+            var key = propertyExpression.GetInstanceAnnotationKey( out name );
             var builder = configuration.GetModelBuilder();
             var configurations = builder.GetAnnotationConfigurations();
             ComplexTypeInstanceAnnotationConfiguration<TStructuralType, TProperty> annotationConfig;
 
             // if the property has already been configured, return the existing configuration
-            if ( configurations.TryGet( propertyExpression, out annotationConfig ) )
+            if ( configurations.TryGet( key, out annotationConfig ) )
                 return annotationConfig;
 
             var annotationType = typeof( TProperty );
@@ -525,10 +530,9 @@
                 throw new InvalidOperationException( string.Format( CurrentCulture, InvalidComplexTypeCollection, annotationType ) );
 
             // always ignore the annotation property from the entity model
-            configuration.Ignore( propertyExpression );
+            propertyExpression.IgnoredBy( configuration );
 
             // build an annotation for the entity property
-            var name = ( (MemberExpression) propertyExpression.Body ).Member.Name;
             var accessor = propertyExpression.ToLazyContravariantFunc();
             var qualifiedName = Invariant( $"{configuration.Namespace}.{name}" );
             var annotationTypeConfig = builder.ComplexType<TProperty>();
@@ -540,7 +544,7 @@
             };
 
             annotationConfig = new ComplexTypeInstanceAnnotationConfiguration<TStructuralType, TProperty>( configuration, name, annotationTypeConfig, annotation );
-            configurations.Add( propertyExpression, annotationConfig );
+            configurations.Add( key, annotationConfig );
 
             return annotationConfig;
         }

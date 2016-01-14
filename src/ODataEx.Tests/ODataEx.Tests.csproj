@@ -36,6 +36,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\More.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.OData.Core, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -122,6 +128,9 @@
     <Compile Include="Web.OData\Routing\RawValueRoutingConventionTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\More.snk">
+      <Link>More.snk</Link>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

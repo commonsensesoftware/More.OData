@@ -34,7 +34,21 @@
             return new Lazy<Func<object, object>>( () =>
             {
                 var func = expression.Compile();
-                return o => func( (TStructuralType) o );
+                return o =>
+                {
+                    try
+                    {
+                        return func( (TStructuralType) o );
+                    }
+                    catch ( NullReferenceException )
+                    {
+                        // note: this is supported so we gracefully fail and do not return a value for an expression
+                        // that refers to a object graph path. for example: r => r.Image.Type, where Image could be null.
+                        // also note that the null propagtion operator cannot be used in an expression. for example:
+                        // the following expression will not compile: r => r.Image?.Type.
+                        return default( TProperty );
+                    }
+                };
             } );
         }
 
@@ -190,17 +204,18 @@
             Contract.Ensures( Contract.Result<MediaTypeConfiguration<TEntityType>>() != null );
 
             // an entity that represents a media type can only have a single link entry. check for presense of an existing configuration.
+            var key = propertyExpression.GetMediaResourceKey();
             var builder = configuration.GetModelBuilder();
             var configurations = builder.GetAnnotationConfigurations();
             MediaTypeConfiguration<TEntityType> mediaTypeConfig;
 
             // if the media type has already been configured, return the existing configuration
-            if ( configurations.TryGet( propertyExpression, out mediaTypeConfig ) )
+            if ( configurations.TryGet( key, out mediaTypeConfig ) )
                 return mediaTypeConfig;
 
             // always ignore the content type property from the entity model and call the build-in MediaType
             // extension method, which will configure the entity model with HasStream = true for the entity
-            configuration.Ignore( propertyExpression );
+            propertyExpression.IgnoredBy( configuration );
             configuration.MediaType();
 
             // compile the property expression into a lazy-initialized, contravariant function
@@ -209,12 +224,26 @@
             var contentType = new Lazy<Func<object, string>>( () =>
             {
                 var func = propertyExpression.Compile();
-                return o => func( (TEntityType) o );
+                return o =>
+                {
+                    try
+                    {
+                        return func( (TEntityType) o );
+                    }
+                    catch ( NullReferenceException )
+                    {
+                        // note: this is supported so we gracefully fail and do not return a value for an expression
+                        // that refers to a object graph path. for example: r => r.Image.Type, where Image could be null.
+                        // also note that the null propagtion operator cannot be used in an expression. for example:
+                        // the following expression will not compile: r => r.Image?.Type.
+                        return null;
+                    }
+                };
             } );
             var annotation = new MediaLinkEntryAnnotation( contentType );
 
             mediaTypeConfig = new MediaTypeConfiguration<TEntityType>( configuration, annotation );
-            configurations.Add( propertyExpression, mediaTypeConfig );
+            configurations.Add( key, mediaTypeConfig );
 
             return mediaTypeConfig;
         }

@@ -53,7 +53,7 @@
             Arg.NotNull( foreignKeyProperty, nameof( foreignKeyProperty ) );
             Arg.NotNullOrEmpty( targetEntitySetName, nameof( targetEntitySetName ) );
 
-            var foreignKeyPropertyName = ( (MemberExpression) foreignKeyProperty.Body ).Member.Name;
+            var foreignKeyPropertyName = foreignKeyProperty.GetPropertyName();
 
             entitySet.HasNavigationPropertyLink(
                 navigationProperty,

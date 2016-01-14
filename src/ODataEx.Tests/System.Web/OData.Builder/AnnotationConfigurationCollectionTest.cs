@@ -31,11 +31,12 @@
             var configuration2 = new Mock<IAnnotationConfiguration>().Object;
             var configuration3 = new Mock<IAnnotationConfiguration>().Object;
             var collection = new AnnotationConfigurationCollection();
+            string name;
 
             // act
-            collection.Add( property1, configuration1 );
-            collection.Add( property2, configuration2 );
-            collection.Add( property3, configuration3 );
+            collection.Add( property1.GetInstanceAnnotationKey( out name ), configuration1 );
+            collection.Add( property2.GetInstanceAnnotationKey( out name ), configuration2 );
+            collection.Add( property3.GetInstanceAnnotationKey( out name ), configuration3 );
 
             var actual = collection.Count;
 
@@ -55,11 +56,12 @@
             var configuration3 = new Mock<IAnnotationConfiguration>().Object;
             var expected = new[] { configuration1, configuration2, configuration3 }.AsEnumerable();
             var collection = new AnnotationConfigurationCollection();
+            string name;
 
             // act
-            collection.Add( property1, configuration1 );
-            collection.Add( property2, configuration2 );
-            collection.Add( property3, configuration3 );
+            collection.Add( property1.GetInstanceAnnotationKey( out name ), configuration1 );
+            collection.Add( property2.GetInstanceAnnotationKey( out name ), configuration2 );
+            collection.Add( property3.GetInstanceAnnotationKey( out name ), configuration3 );
 
             var actual = collection.AsEnumerable();
 
@@ -79,11 +81,12 @@
             var configuration3 = new Mock<IAnnotationConfiguration>().Object;
             var expected = new[] { configuration1, configuration2, configuration3 };
             var collection = new AnnotationConfigurationCollection();
+            string name;
 
             // act
-            collection.Add( property1, configuration1 );
-            collection.Add( property2, configuration2 );
-            collection.Add( property3, configuration3 );
+            collection.Add( property1.GetInstanceAnnotationKey( out name ), configuration1 );
+            collection.Add( property2.GetInstanceAnnotationKey( out name ), configuration2 );
+            collection.Add( property3.GetInstanceAnnotationKey( out name ), configuration3 );
 
             // assert
             for ( var i = 0; i < expected.Length; i++ )
@@ -99,10 +102,10 @@
             var configuration = new Mock<IAnnotationConfiguration>().Object;
             var collection = new AnnotationConfigurationCollection();
 
-            collection.Add( property, configuration );
+            collection.Add( property.GetMediaResourceKey(), configuration );
 
             // act
-            var ex = Assert.Throws<InvalidOperationException>( () => collection.Add( property, configuration ) );
+            var ex = Assert.Throws<InvalidOperationException>( () => collection.Add( property.GetMediaResourceKey(), configuration ) );
             var actual = ex.Message;
 
             // assert
@@ -118,7 +121,7 @@
             var collection = new AnnotationConfigurationCollection();
 
             // act
-            var result = collection.TryGet( property, out item );
+            var result = collection.TryGet( property.GetMediaResourceKey(), out item );
 
             // assert
             Assert.False( result );
@@ -134,10 +137,10 @@
             IAnnotationConfiguration item;
             var collection = new AnnotationConfigurationCollection();
 
-            collection.Add( property, configuration );
+            collection.Add( property.GetMediaResourceKey(), configuration );
 
             // act
-            var result = collection.TryGet( property, out item );
+            var result = collection.TryGet( property.GetMediaResourceKey(), out item );
 
             // assert
             Assert.True( result );

@@ -79,6 +79,15 @@ namespace More {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The expression &apos;{0}&apos; does refer to a valid member that can be used for as an instance annotation..
+        /// </summary>
+        internal static string InvalidAnnotationPropertyExpression {
+            get {
+                return ResourceManager.GetString("InvalidAnnotationPropertyExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified type &apos;{0}&apos; cannot be configured as an annotation because it&apos;s a collection. Use the HasAnnotations method for annotation collections..
         /// </summary>
         internal static string InvalidComplexType {
@@ -93,6 +102,33 @@ namespace More {
         internal static string InvalidComplexTypeCollection {
             get {
                 return ResourceManager.GetString("InvalidComplexTypeCollection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The expression &apos;{0}&apos; does refer to a valid member that can be used for a media resource..
+        /// </summary>
+        internal static string InvalidMediaResourcePropertyExpression {
+            get {
+                return ResourceManager.GetString("InvalidMediaResourcePropertyExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The expression &apos;{0}&apos; must refer to a property..
+        /// </summary>
+        internal static string InvalidPropertyExpression {
+            get {
+                return ResourceManager.GetString("InvalidPropertyExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The first referenced member in the expression &apos;{0}&apos; must be a property..
+        /// </summary>
+        internal static string InvalidPropertyPathExpression {
+            get {
+                return ResourceManager.GetString("InvalidPropertyPathExpression", resourceCulture);
             }
         }
         

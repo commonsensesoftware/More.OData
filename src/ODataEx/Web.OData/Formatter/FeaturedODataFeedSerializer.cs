@@ -1,9 +1,11 @@
-﻿namespace More.Web.OData.Formatter
+﻿using System.Diagnostics.Contracts;
+namespace More.Web.OData.Formatter
 {
     using Microsoft.OData.Core;
     using Microsoft.OData.Edm;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Web.OData.Formatter.Serialization;
 
@@ -56,8 +58,11 @@
         /// <param name="feedType">The feed collection type.</param>
         /// <param name="writeContext">The current <see cref="ODataSerializerContext">serializer context</see>.</param>
         /// <returns>The created <see cref="ODataFeed">feed</see>.</returns>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "2", Justification = "Validated by a code contract." )]
         public override ODataFeed CreateODataFeed( IEnumerable feedInstance, IEdmCollectionTypeReference feedType, ODataSerializerContext writeContext )
         {
+            Contract.Assume( writeContext != null );
+
             var feed = base.CreateODataFeed( feedInstance, feedType, writeContext );
             var entitySet = writeContext.Model.EntityContainer.FindEntitySet( writeContext.NavigationSource.Name );
             var context = new ODataSerializationFeatureContext( entitySet, writeContext, ComplexTypeSerializer ) { Instance = feedInstance };

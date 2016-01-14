@@ -123,11 +123,23 @@
   <data name="ControllerUnsupportedMethod" xml:space="preserve">
     <value>{0} requests are not supported.</value>
   </data>
+  <data name="InvalidAnnotationPropertyExpression" xml:space="preserve">
+    <value>The expression '{0}' does refer to a valid member that can be used for as an instance annotation.</value>
+  </data>
   <data name="InvalidComplexType" xml:space="preserve">
     <value>The specified type '{0}' cannot be configured as an annotation because it's a collection. Use the HasAnnotations method for annotation collections.</value>
   </data>
   <data name="InvalidComplexTypeCollection" xml:space="preserve">
     <value>The specified type '{0}' cannot be configured as an annotation because collections of collections is not supported.</value>
+  </data>
+  <data name="InvalidMediaResourcePropertyExpression" xml:space="preserve">
+    <value>The expression '{0}' does refer to a valid member that can be used for a media resource.</value>
+  </data>
+  <data name="InvalidPropertyExpression" xml:space="preserve">
+    <value>The expression '{0}' must refer to a property.</value>
+  </data>
+  <data name="InvalidPropertyPathExpression" xml:space="preserve">
+    <value>The first referenced member in the expression '{0}' must be a property.</value>
   </data>
   <data name="MultipleAnnotationConfigsNotAllowed" xml:space="preserve">
     <value>The property '{0}' cannot be configured as an annotation more than once.</value>
