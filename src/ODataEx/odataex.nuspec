@@ -8,7 +8,9 @@
   <title>More - OData with ASP.NET Web API</title>
   <description>$description$</description>
   <summary>Provides "More" extensions for creating OData v4.0 endpoints with ASP.NET Web API.</summary>
-  <releaseNotes></releaseNotes>
+  <releaseNotes>• Added additional support for complex instance annotation expressions
+• Added more meaningful error messages for invalid expressions
+• Fixed EDM Term casing issue in the metadata document</releaseNotes>
   <language>en-US</language>
   <requireLicenseAcceptance>true</requireLicenseAcceptance>
   <licenseUrl>https://raw.githubusercontent.com/commonsensesoftware/More.OData/master/LICENSE</licenseUrl>

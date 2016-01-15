@@ -3,10 +3,8 @@
     using Diagnostics.Contracts;
     using Linq.Expressions;
     using Reflection;
-    using Text;
     using static Globalization.CultureInfo;
     using static More.ExceptionMessage;
-    using static More.StringExtensions;
 
     internal static class ExpressionExtensions
     {
@@ -15,31 +13,16 @@
             Contract.Requires( propertyExpression != null );
             Contract.Requires( configuration != null );
 
-            var node = (MemberExpression) propertyExpression.Body;
+            var visitor = new InitialPropertyVisitor();
 
-            // simple scenario; just short-circuit based on the current expression
-            // ex: o => o.Property
-            if ( node.Expression.NodeType == ExpressionType.Parameter )
-            {
-                configuration.Ignore( propertyExpression );
-                return;
-            }
+            visitor.Visit( propertyExpression );
 
-            // reduce the expression so we exclude the property and its entire object graph
-            // ex: o => o.Property.SubProperty :: o => o.Property
-            do
-            {
-                node = (MemberExpression) node.Expression;
-            }
-            while ( node.Expression.NodeType != ExpressionType.Parameter );
-
-            var property = node.Member as PropertyInfo;
-
-            if ( property == null )
-                throw new ArgumentException( string.Format( CurrentCulture, InvalidPropertyPathExpression, propertyExpression ), nameof( propertyExpression ) );
+            var property = visitor.InitialProperty;
 
             // remove the property from the configuration (equivalent to Ignore, but without using Reflection to create the required generic method)
-            configuration.GetInnerConfiguration().RemoveProperty( property );
+            // note: we only need to consider ignoring properties. fields, methods, and indexers can be used, but are never exposed in the entity model
+            if ( property != null )
+                configuration.GetInnerConfiguration().RemoveProperty( property );
         }
 
         internal static string GetPropertyName<TObject, TProperty>( this Expression<Func<TObject, TProperty>> propertyExpression )
@@ -50,7 +33,7 @@
             var node = propertyExpression.Body as MemberExpression;
 
             // the expression wasn't valid; throw meaningful exception
-            if ( node == null )
+            if ( node == null || node.Member.MemberType != MemberTypes.Property )
                 throw new ArgumentException( string.Format( CurrentCulture, InvalidPropertyExpression, propertyExpression ), nameof( propertyExpression ) );
 
             return node.Member.Name;
@@ -61,7 +44,7 @@
             Contract.Requires( propertyExpression != null );
             Contract.Ensures( !string.IsNullOrEmpty( Contract.Result<string>() ) );
 
-            var visitor = new FirstAccessedMemberVisitor();
+            var visitor = new PropertyPathVisitor();
 
             // visit the expression and get the name of the first member (e.g. property or field)
             visitor.Visit( propertyExpression );
@@ -71,7 +54,7 @@
                 throw new ArgumentException( string.Format( CurrentCulture, InvalidMediaResourcePropertyExpression, propertyExpression ), nameof( propertyExpression ) );
 
             // build unique key
-            return Invariant( $"{typeof( TObject ).FullName}.{visitor.Name}" );
+            return visitor.GenerateKey( typeof( TObject ).FullName, includeLiterals: false );
         }
 
         internal static string GetInstanceAnnotationKey<TObject, TProperty>( this Expression<Func<TObject, TProperty>> propertyExpression, out string name )
@@ -79,32 +62,17 @@
             Contract.Requires( propertyExpression != null );
             Contract.Ensures( !string.IsNullOrEmpty( Contract.Result<string>() ) );
 
-            name = null;
-            var node = propertyExpression.Body as MemberExpression;
+            var visitor = new PropertyPathVisitor();
+
+            // visit the expression and get the name of the first member (e.g. property or field)
+            visitor.Visit( propertyExpression );
 
             // the expression wasn't valid; throw meaningful exception
-            if ( node == null )
+            if ( string.IsNullOrEmpty( name = visitor.Name ) )
                 throw new ArgumentException( string.Format( CurrentCulture, InvalidAnnotationPropertyExpression, propertyExpression ), nameof( propertyExpression ) );
 
-            // use the name of the tail member expression as the initial annotation name            
-            var key = new StringBuilder( name = node.Member.Name );
-
-            // build up expression path
-            while ( node.Expression.NodeType != ExpressionType.Parameter )
-            {
-                // the expression node wasn't valid; throw meaningful exception
-                if ( ( node = node.Expression as MemberExpression ) == null )
-                    throw new ArgumentException( string.Format( CurrentCulture, InvalidAnnotationPropertyExpression, propertyExpression ), nameof( propertyExpression ) );
-
-                key.Insert( 0, '.' );
-                key.Insert( 0, node.Member.Name );
-            }
-
-            // build up unique key
-            key.Insert( 0, '.' );
-            key.Insert( 0, typeof( TObject ).FullName );
-
-            return key.ToString();
+            // build unique key
+            return visitor.GenerateKey( typeof( TObject ).FullName );
         }
     }
 }

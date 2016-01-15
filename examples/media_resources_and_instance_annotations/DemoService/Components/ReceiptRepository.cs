@@ -31,9 +31,12 @@
                                Name = (string) xml.Element( nameof( Receipt.Name ) ),
                                ReceiptNumber = (string) xml.Element( nameof( Receipt.ReceiptNumber ) ),
                                Retailer = (string) xml.Element( nameof( Receipt.Retailer ) ),
-                               ImageType = (string) xml.Element( nameof( Receipt.ImageType ) ),
-                               ImagePath = ChangeExtension( file, ".bin" ),
-                               ImageSize = long.Parse( (string) xml.Element( nameof( Receipt.ImageSize ) ) ),
+                               Image = new Image()
+                               {
+                                   Type = (string) xml.Element( "ImageType" ),
+                                   Path = ChangeExtension( file, ".bin" ),
+                                   Size = long.Parse( (string) xml.Element( "ImageSize" ) )
+                               }
                            };
 
             return receipts.AsQueryable();

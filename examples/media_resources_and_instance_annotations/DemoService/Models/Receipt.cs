@@ -35,20 +35,7 @@
         }
 
         // note: this property is never transmitted over the wire; see the model configuration
-        public string ImageType
-        {
-            get;
-            set;
-        }
-
-        // note: this property is never transmitted over the wire; see the model configuration
-        public string ImagePath
-        {
-            get;
-            set;
-        }
-
-        public long ImageSize
+        public Image Image
         {
             get;
             set;

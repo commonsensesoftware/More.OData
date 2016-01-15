@@ -192,7 +192,8 @@
     <Compile Include="System.Web\OData.Builder\BuilderExtensions.HasAnnotations.cs" />
     <Compile Include="System.Web\OData.Builder\ConfigurationExtensions.cs" />
     <Compile Include="System.Web\OData.Builder\ExpressionExtensions.cs" />
-    <Compile Include="System.Web\OData.Builder\FirstAccessedMemberVisitor.cs" />
+    <Compile Include="System.Web\OData.Builder\InitialPropertyVisitor.cs" />
+    <Compile Include="System.Web\OData.Builder\PropertyPathVisitor.cs" />
     <Compile Include="System\FormattableString.cs" />
     <Compile Include="System\FormattableStringFactory.cs" />
     <Compile Include="TypeExtensions.cs" />
