@@ -147,12 +147,11 @@
             if ( entityType == null )
                 return;
 
-            // aggregate all property annotations for a given entity type
+            // aggregate all annotations for a given entity type
             var annotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( entityType ) ?? new HashSet<InstanceAnnotation>( InstanceAnnotationComparer.Instance );
-            var qualifiedName = Invariant( $"{Namespace}.{Name}" );
 
             // update the qualified name as needed and add the annotation/term
-            Annotation.QualifiedName = model.IsLowerCamelCaseEnabled() ? qualifiedName.ToCamelCase() : qualifiedName;
+            Annotation.QualifiedName = Invariant( $"{Namespace}.{Name}" );
             annotations.Add( Annotation );
             model.SetAnnotationValue( entityType, annotations );
             model.AddTerm( this, Annotation, "EntityType ComplexType" );
@@ -175,12 +174,11 @@
             if ( property == null )
                 return;
 
-            // aggregate all property annotations for a given entity type
+            // aggregate all annotations for a given property
             var annotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( property ) ?? new HashSet<InstanceAnnotation>( InstanceAnnotationComparer.Instance );
-            var qualifiedName = Invariant( $"{Namespace}.{Name}" );
 
             // update the qualified name as needed and add the annotation/term
-            Annotation.QualifiedName = model.IsLowerCamelCaseEnabled() ? qualifiedName.ToCamelCase() : qualifiedName;
+            Annotation.QualifiedName = Invariant( $"{Namespace}.{Name}" );
             annotations.Add( Annotation );
             model.SetAnnotationValue( property, annotations );
             model.AddTerm( this, Annotation, "Property" );
@@ -194,6 +192,13 @@
         protected override void Apply( IEdmModel model )
         {
             Arg.NotNull( model, nameof( model ) );
+
+            // update casing just before the annotation is applied
+            if ( model.IsLowerCamelCaseEnabled() )
+            {
+                Name = Name.ToCamelCase();
+                Namespace = Namespace.ToCamelCase();
+            }
 
             var targetProperty = TargetProperty;
 

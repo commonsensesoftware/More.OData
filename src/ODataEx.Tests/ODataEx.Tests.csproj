@@ -122,6 +122,7 @@
     <Compile Include="System.Web\Http\ApiControllerExtensionsTest.cs" />
     <Compile Include="System.Web\Http\HttpConfigurationExtensionsTest.cs" />
     <Compile Include="System.Web\OData.Builder\AnnotationConfigurationCollectionTest.cs" />
+    <Compile Include="System.Web\OData.Builder\PropertyPathVisitorTest.cs" />
     <Compile Include="System.Web\OData\ETagExtensionsTest.cs" />
     <Compile Include="Web.OData\EmptyStreamTest.cs" />
     <Compile Include="Web.OData\LinkTest.cs" />

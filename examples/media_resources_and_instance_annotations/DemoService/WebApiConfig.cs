@@ -4,6 +4,7 @@
     using System.Web.Http;
     using System.Web.OData.Builder;
     using System.Web.OData.Extensions;
+    using Web.OData;
 
     public static class WebApiConfig
     {
@@ -32,9 +33,14 @@
 
             device.Namespace = builder.Namespace;
             device.HasKey( d => d.SerialNumber );
+            device.HasAnnotation( d => d.LastModified ).Namespace = "my";
+            device.HasAnnotation( d => d.SkuType ).Namespace = "my";
             device.HasAnnotation( d => d.SkuType ).ForProperty( d => d.Sku );
+            device.HasComplexAnnotations( d => d.Links ).Namespace = "external";
             device.Ignore( d => d.ReceiptId );
             devices.HasNavigationPropertyLink( device.HasOptional( d => d.Receipt ), d => d.ReceiptId, "Receipts" );
+
+            builder.ComplexType<Link>().Namespace = builder.Namespace;
         }
 
         private static void BuildReceiptModel( ODataModelBuilder builder )
@@ -43,9 +49,7 @@
 
             receipt.Namespace = builder.Namespace;
             receipt.HasKey( r => r.Id );
-            receipt.MediaType( r => r.ImageType );
-            receipt.Ignore( r => r.ImagePath );
-            receipt.Ignore( r => r.ImageSize );
+            receipt.MediaType( r => r.Image.Type );
         }
     }
 }

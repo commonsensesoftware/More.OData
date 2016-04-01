@@ -7,6 +7,11 @@ The current set of features include:
 * Media Resources
 * Instance Annotations
 
+The corresponding package is available on NuGet as
+[More.AspNet.OData](https://www.nuget.org/packages/More.AspNet.OData/). For
+end-to-end working solutions, check out the provided
+[examples](https://github.com/commonsensesoftware/More.OData/tree/master/examples).
+
 ## Media Resources
 Entities that represent media resources are a first-class concept in OData,
 but exposing them correctly in Web API requires a lot of developer work
@@ -106,7 +111,7 @@ public async Task<IHttpActionResult> HeadValue( [FromODataUri] Guid key )
 {
     var receipt = await repository.GetSingleAsync( r => r.Id == key );
 
-    if ( receipt == null || !string.IsNullOrEmpty( receipt.ImagePath ) )
+    if ( receipt == null || string.IsNullOrEmpty( receipt.ImagePath ) )
         return NotFound();
 
     return this.OkWithContentHeaders( receipt.ImageSize, receipt.ImageType );

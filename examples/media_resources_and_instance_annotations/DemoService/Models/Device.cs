@@ -1,6 +1,8 @@
 ﻿namespace More.Examples.Models
 {
     using System;
+    using System.Collections.Generic;
+    using Web.OData;
 
     public class Device
     {
@@ -50,5 +52,10 @@
         {
             get;
         }
+
+        public IList<Link> Links
+        {
+            get;
+        } = new List<Link>();
     }
 }

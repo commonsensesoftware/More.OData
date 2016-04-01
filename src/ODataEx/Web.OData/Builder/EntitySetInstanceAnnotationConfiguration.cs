@@ -56,12 +56,18 @@
             if ( entitySet == null )
                 return;
 
-            // aggregate all property annotations for a given entity type
+            // update casing just before the annotation is applied
+            if ( model.IsLowerCamelCaseEnabled() )
+            {
+                Name = Name.ToCamelCase();
+                Namespace = Namespace.ToCamelCase();
+            }
+
+            // aggregate all annotations for a given entity set
             var annotations = model.GetAnnotationValue<HashSet<InstanceAnnotation>>( entitySet ) ?? new HashSet<InstanceAnnotation>( InstanceAnnotationComparer.Instance );
-            var qualifiedName = Invariant( $"{Namespace}.{Name}" );
 
             // update the qualified name as needed and add the annotation/term
-            Annotation.QualifiedName = model.IsLowerCamelCaseEnabled() ? qualifiedName.ToCamelCase() : qualifiedName;
+            Annotation.QualifiedName = Invariant( $"{Namespace}.{Name}" );
             annotations.Add( Annotation );
             model.SetAnnotationValue( entitySet, annotations );
             model.AddTerm( this, Annotation, "EntitySet" );

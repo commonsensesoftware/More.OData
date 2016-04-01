@@ -3,18 +3,11 @@
     using Diagnostics.CodeAnalysis;
     using Diagnostics.Contracts;
     using Linq.Expressions;
+    using Reflection;
 
-    /// <summary>
-    /// Represents an expression visitor that captures the name of the first referenced member.
-    /// </summary>
-    /// <example>
-    /// o => o.Property;              // matches 'Property'
-    /// o => o.Property.SubProperty;  // matches 'SubProperty'
-    /// o => o.Property.ToString();   // matches 'Property'
-    /// </example>
-    internal sealed class FirstAccessedMemberVisitor : ExpressionVisitor
+    internal sealed class InitialPropertyVisitor : ExpressionVisitor
     {
-        public string Name
+        public PropertyInfo InitialProperty
         {
             get;
             private set;
@@ -26,7 +19,7 @@
             Contract.Assume( node != null );
 
             if ( node.Expression.NodeType == ExpressionType.Parameter )
-                Name = node.Member.Name;
+                InitialProperty = node.Member as PropertyInfo;
 
             return base.VisitMember( node );
         }

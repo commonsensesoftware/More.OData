@@ -55,14 +55,14 @@
             if ( receipt == null )
                 return NotFound();
 
-            var file = await fileSystem.TryGetFileAsync( receipt.ImagePath );
+            var file = await fileSystem.TryGetFileAsync( receipt.Image.Path );
 
             if ( file == null )
                 return NotFound();
 
             var stream = await file.OpenReadAsync();
 
-            return this.SuccessOrPartialContent( stream, receipt.ImageType );
+            return this.SuccessOrPartialContent( stream, receipt.Image.Type );
         }
 
         // HEAD ~/receipts(<guid>)/$value
@@ -72,10 +72,10 @@
         {
             var receipt = await repository.GetSingleAsync( r => r.Id == key );
 
-            if ( receipt == null || !string.IsNullOrEmpty( receipt.ImagePath ) )
+            if ( receipt == null || string.IsNullOrEmpty( receipt.Image.Path ) )
                 return NotFound();
 
-            return this.OkWithContentHeaders( receipt.ImageSize, receipt.ImageType );
+            return this.OkWithContentHeaders( receipt.Image.Size, receipt.Image.Type );
         }
     }
 }
