@@ -50,7 +50,6 @@
 
             var actionName = action.ToString();
 
-            // return null if there is no matching method
             return actionMap.Contains( actionName ) ? actionName : null;
         }
     }

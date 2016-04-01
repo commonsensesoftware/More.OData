@@ -1,10 +1,13 @@
-﻿namespace System.Web.Http
+﻿using Xunit;
+namespace System.Web.Http
 {
     using Microsoft.OData.Core;
     using Moq;
     using Net;
     using Net.Http;
     using Net.Http.Headers;
+    using OData;
+    using OData.Query;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -173,11 +176,11 @@
             Assert.Equal( HttpStatusCode.RequestedRangeNotSatisfiable, response.StatusCode );
         }
 
-        [Fact( DisplayName = "not implemented should return default error" )]
+        [Fact( DisplayName = "not implemented should return http 501" )]
         public async Task NotImplementedShouldReturnDefaultError()
         {
             // arrange
-            var expected = "DELETE requests are not supported.";
+            var expected = new ODataError() { Message = "DELETE requests are not supported." };
             var configuration = new HttpConfiguration();
             var request = new HttpRequestMessage( HttpMethod.Delete, "http://localhost/Tests(1)" );
             var controller = new Mock<ApiController>().Object;
@@ -189,18 +192,19 @@
             // act
             var actionResult = controller.NotImplemented();
             var response = await actionResult.ExecuteAsync( CancellationToken.None );
-            var error = await response.Content.ReadAsAsync<ODataError>();
-            var actual = error.Message;
+            var actual = await response.Content.ReadAsAsync<ODataError>();
 
             // assert
-            Assert.Equal( expected, actual );
+            Assert.Equal( HttpStatusCode.NotImplemented, response.StatusCode );
+            Assert.Equal( expected.ErrorCode, actual.ErrorCode );
+            Assert.Equal( expected.Message, actual.Message );
         }
 
-        [Fact( DisplayName = "not implemented should return error with custom message" )]
+        [Fact( DisplayName = "not implemented should return http 501 with custom message" )]
         public async Task NotImplementedShouldReturnErrorWithCustomMessage()
         {
             // arrange
-            var expected = "The OPTIONS method is unsupported.";
+            var expected = new ODataError() { Message = "The OPTIONS method is unsupported." };
             var configuration = new HttpConfiguration();
             var request = new HttpRequestMessage( HttpMethod.Options, "http://localhost/Tests(1)" );
             var controller = new Mock<ApiController>().Object;
@@ -212,14 +216,15 @@
             // act
             var actionResult = controller.NotImplemented( expected );
             var response = await actionResult.ExecuteAsync( CancellationToken.None );
-            var error = await response.Content.ReadAsAsync<ODataError>();
-            var actual = error.Message;
+            var actual = await response.Content.ReadAsAsync<ODataError>();
 
             // assert
-            Assert.Equal( expected, actual );
+            Assert.Equal( HttpStatusCode.NotImplemented, response.StatusCode );
+            Assert.Equal( expected.ErrorCode, actual.ErrorCode );
+            Assert.Equal( expected.Message, actual.Message );
         }
 
-        [Fact( DisplayName = "not implemented should return custom error" )]
+        [Fact( DisplayName = "not implemented should return http 501 custom error" )]
         public async Task NotImplementedShouldReturnCustomError()
         {
             // arrange
@@ -242,6 +247,129 @@
             var actual = await response.Content.ReadAsAsync<ODataError>();
 
             // assert
+            Assert.Equal( HttpStatusCode.NotImplemented, response.StatusCode );
+            Assert.Equal( expected.ErrorCode, actual.ErrorCode );
+            Assert.Equal( expected.Message, actual.Message );
+        }
+
+        [Fact( DisplayName = "no content should return http 204" )]
+        public async Task NoContentShouldReturnHttp204()
+        {
+            // arrange
+            var configuration = new HttpConfiguration();
+            var request = new HttpRequestMessage( HttpMethod.Options, "http://localhost/Tests(1)" );
+            var controller = new Mock<ApiController>().Object;
+            var expected = HttpStatusCode.NoContent;
+
+            request.SetConfiguration( configuration );
+            controller.Request = request;
+            controller.Configuration = new HttpConfiguration();
+
+            // act
+            var actionResult = controller.NoContent();
+            var response = await actionResult.ExecuteAsync( CancellationToken.None );
+            var actual = response.StatusCode;
+
+            // assert
+            Assert.Equal( expected, actual );
+        }
+
+        [Fact( DisplayName = "precondition failed should return http 412" )]
+        public async Task PreconditionFailedShouldReturnHttp412()
+        {
+            // arrange
+            var configuration = new HttpConfiguration();
+            var request = new HttpRequestMessage( HttpMethod.Options, "http://localhost/Tests(1)" );
+            var controller = new Mock<ApiController>().Object;
+            var expected = HttpStatusCode.PreconditionFailed;
+
+            request.SetConfiguration( configuration );
+            controller.Request = request;
+            controller.Configuration = new HttpConfiguration();
+
+            // act
+            var actionResult = controller.PreconditionFailed();
+            var response = await actionResult.ExecuteAsync( CancellationToken.None );
+            var actual = response.StatusCode;
+
+            // assert
+            Assert.Equal( expected, actual );
+        }
+
+        [Fact( DisplayName = "precondition failed should return http 412 with custom error" )]
+        public async Task PreconditionFailedShouldReturnHttp412WithCustomError()
+        {
+            // arrange
+            var expected = new ODataError()
+            {
+                ErrorCode = "42",
+                Message = "The ETag specified in the If-Match header is no longer valid."
+            };
+            var configuration = new HttpConfiguration();
+            var request = new HttpRequestMessage( HttpMethod.Options, "http://localhost/Tests(1)" );
+            var controller = new Mock<ApiController>().Object;
+
+            request.SetConfiguration( configuration );
+            controller.Request = request;
+            controller.Configuration = new HttpConfiguration();
+
+            // act
+            var actionResult = controller.PreconditionFailed( expected );
+            var response = await actionResult.ExecuteAsync( CancellationToken.None );
+            var actual = await response.Content.ReadAsAsync<ODataError>();
+
+            // assert
+            Assert.Equal( HttpStatusCode.PreconditionFailed, response.StatusCode );
+            Assert.Equal( expected.ErrorCode, actual.ErrorCode );
+            Assert.Equal( expected.Message, actual.Message );
+        }
+
+        [Fact( DisplayName = "precondition required should return http 428" )]
+        public async Task PreconditionRequiredShouldReturnHttp428()
+        {
+            // arrange
+            var configuration = new HttpConfiguration();
+            var request = new HttpRequestMessage( HttpMethod.Options, "http://localhost/Tests(1)" );
+            var controller = new Mock<ApiController>().Object;
+            var expected = (HttpStatusCode) 428;
+
+            request.SetConfiguration( configuration );
+            controller.Request = request;
+            controller.Configuration = new HttpConfiguration();
+
+            // act
+            var actionResult = controller.PreconditionRequired();
+            var response = await actionResult.ExecuteAsync( CancellationToken.None );
+            var actual = response.StatusCode;
+
+            // assert
+            Assert.Equal( expected, actual );
+        }
+
+        [Fact( DisplayName = "precondition required should return http 428 with custom error" )]
+        public async Task PreconditionRequiredShouldReturnHttp428WithCustomError()
+        {
+            // arrange
+            var expected = new ODataError()
+            {
+                ErrorCode = "42",
+                Message = "The If-Match header must be specified."
+            };
+            var configuration = new HttpConfiguration();
+            var request = new HttpRequestMessage( HttpMethod.Options, "http://localhost/Tests(1)" );
+            var controller = new Mock<ApiController>().Object;
+
+            request.SetConfiguration( configuration );
+            controller.Request = request;
+            controller.Configuration = new HttpConfiguration();
+
+            // act
+            var actionResult = controller.PreconditionRequired( expected );
+            var response = await actionResult.ExecuteAsync( CancellationToken.None );
+            var actual = await response.Content.ReadAsAsync<ODataError>();
+
+            // assert
+            Assert.Equal( (HttpStatusCode) 428, response.StatusCode );
             Assert.Equal( expected.ErrorCode, actual.ErrorCode );
             Assert.Equal( expected.Message, actual.Message );
         }

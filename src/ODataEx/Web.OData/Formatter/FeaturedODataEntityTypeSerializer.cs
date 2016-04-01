@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-namespace More.Web.OData.Formatter
+﻿namespace More.Web.OData.Formatter
 {
     using Microsoft.OData.Core;
     using System.Collections.Generic;
@@ -13,8 +12,6 @@ namespace More.Web.OData.Formatter
     /// </summary>
     public class FeaturedODataEntityTypeSerializer : ODataEntityTypeSerializer
     {
-        private readonly ODataComplexTypeSerializer complexSerializer;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FeaturedODataEntityTypeSerializer"/> class.
         /// </summary>
@@ -24,7 +21,7 @@ namespace More.Web.OData.Formatter
             : base( serializerProvider )
         {
             Arg.NotNull( serializationFeatures, nameof( serializationFeatures ) );
-            complexSerializer = new ODataComplexTypeSerializer( serializerProvider );
+            ComplexTypeSerializer = new ODataComplexTypeSerializer( serializerProvider );
             SerializationFeatures = serializationFeatures;
         }
 
@@ -32,23 +29,13 @@ namespace More.Web.OData.Formatter
         /// Gets the complex type serializer associated with the serializer.
         /// </summary>
         /// <value>The associated <see cref="ODataComplexTypeSerializer">complex type serializer</see>.</value>
-        protected ODataComplexTypeSerializer ComplexTypeSerializer
-        {
-            get
-            {
-                Contract.Ensures( complexSerializer != null );
-                return complexSerializer;
-            }
-        }
+        protected ODataComplexTypeSerializer ComplexTypeSerializer { get; }
 
         /// <summary>
         /// Gets a list of serialization features for the serializer.
         /// </summary>
         /// <value>A <see cref="IList{T}">list</see> of <see cref="IODataSerializationFeature">serialization features</see>.</value>
-        public IList<IODataSerializationFeature> SerializationFeatures
-        {
-            get;
-        }
+        public IList<IODataSerializationFeature> SerializationFeatures { get; }
 
         /// <summary>
         /// Overrides the default behavior when an <see cref="ODataEntry">OData entry</see> is created.

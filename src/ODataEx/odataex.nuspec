@@ -8,7 +8,15 @@
   <title>More - OData with ASP.NET Web API</title>
   <description>$description$</description>
   <summary>Provides "More" extensions for creating OData v4.0 endpoints with ASP.NET Web API.</summary>
-  <releaseNotes></releaseNotes>
+  <releaseNotes>• Fixed feed serialization issue for contained entities
+• Fixed annotation serialization issue for open types
+• Added extensions for 204 (No Content)
+• Added extensions for 412 (Precondition Failed)
+• Added extensions for 428 (Precondition Required)
+• Added extensions for custom ETag evaluation
+• Added support to return 400 (Bad Request) when query options are invalid
+• Removed custom HasActionLink extension method; not needed
+• Removed custom CloneWithQualifiedName extension; now unneeded</releaseNotes>
   <language>en-US</language>
   <requireLicenseAcceptance>true</requireLicenseAcceptance>
   <licenseUrl>https://raw.githubusercontent.com/commonsensesoftware/More.OData/master/LICENSE</licenseUrl>
@@ -20,7 +28,7 @@
    <reference file="$id$.dll" />
   </references>
   <dependencies>
-   <dependency id="Microsoft.AspNet.OData" version="5.7.0" />
+   <dependency id="Microsoft.AspNet.OData" version="5.9.0" />
   </dependencies>
  </metadata>
  <files>

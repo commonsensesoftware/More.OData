@@ -44,24 +44,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.OData.Core, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.OData.Core.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Core.dll</HintPath>
+    <Reference Include="Microsoft.OData.Core, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.OData.Core.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.OData.Edm, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.OData.Edm.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
+    <Reference Include="Microsoft.OData.Edm, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.OData.Edm.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Edm.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Spatial, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Spatial.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
+    <Reference Include="Microsoft.Spatial, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Spatial.6.15.0\lib\portable-net45+win+wpa81\Microsoft.Spatial.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="More, Version=1.1.0.0, Culture=neutral, PublicKeyToken=5e67f9a3da787917, processorArchitecture=MSIL">
-      <HintPath>..\packages\More.1.1.1\lib\dotnet\More.dll</HintPath>
+    <Reference Include="More, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5e67f9a3da787917, processorArchitecture=MSIL">
+      <HintPath>..\packages\More.1.2.0\lib\dotnet\More.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -78,8 +78,8 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.OData.5.7.0\lib\net45\System.Web.OData.dll</HintPath>
+    <Reference Include="System.Web.OData, Version=5.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.OData.5.9.0\lib\net45\System.Web.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.abstractions">
@@ -116,15 +116,16 @@
     <Compile Include="Integration\PeopleController.cs" />
     <Compile Include="Integration\PeopleRepository.cs" />
     <Compile Include="Integration\Person.cs" />
-    <Compile Include="Microsoft.OData.Edm\EdmExtensionsTest.cs" />
     <Compile Include="OData.Edm\EntityInstanceAnnotationTest.cs" />
     <Compile Include="OData.Edm\MediaLinkEntryAnnotationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System.Web\Http\ApiControllerExtensionsTest.cs" />
     <Compile Include="System.Web\Http\HttpConfigurationExtensionsTest.cs" />
     <Compile Include="System.Web\OData.Builder\AnnotationConfigurationCollectionTest.cs" />
+    <Compile Include="System.Web\OData\ETagExtensionsTest.cs" />
     <Compile Include="Web.OData\EmptyStreamTest.cs" />
     <Compile Include="Web.OData\LinkTest.cs" />
+    <Compile Include="Web.OData\ODataQueryValidationResultTest.cs" />
     <Compile Include="Web.OData\Routing\RawValueRoutingConventionTest.cs" />
   </ItemGroup>
   <ItemGroup>

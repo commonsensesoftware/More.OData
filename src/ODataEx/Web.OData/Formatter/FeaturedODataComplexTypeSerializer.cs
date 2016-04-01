@@ -3,7 +3,6 @@
     using Microsoft.OData.Core;
     using Microsoft.OData.Edm;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Web.OData.Formatter.Serialization;
 
     /// <summary>
@@ -11,8 +10,6 @@
     /// </summary>
     public class FeaturedODataComplexTypeSerializer : ODataComplexTypeSerializer
     {
-        private readonly ODataComplexTypeSerializer complexSerializer;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FeaturedODataComplexTypeSerializer"/> class.
         /// </summary>
@@ -22,7 +19,7 @@
             : base( serializerProvider )
         {
             Arg.NotNull( serializationFeatures, nameof( serializationFeatures ) );
-            complexSerializer = new ODataComplexTypeSerializer( serializerProvider );
+            ComplexTypeSerializer = new ODataComplexTypeSerializer( serializerProvider );
             SerializationFeatures = serializationFeatures;
         }
 
@@ -30,23 +27,13 @@
         /// Gets the complex type serializer associated with the serializer.
         /// </summary>
         /// <value>The associated <see cref="ODataComplexTypeSerializer">complex type serializer</see>.</value>
-        protected ODataComplexTypeSerializer ComplexTypeSerializer
-        {
-            get
-            {
-                Contract.Ensures( complexSerializer != null );
-                return complexSerializer;
-            }
-        }
+        protected ODataComplexTypeSerializer ComplexTypeSerializer { get; }
 
         /// <summary>
         /// Gets a list of serialization features for the serializer.
         /// </summary>
         /// <value>A <see cref="IList{T}">list</see> of <see cref="IODataSerializationFeature">serialization features</see>.</value>
-        public IList<IODataSerializationFeature> SerializationFeatures
-        {
-            get;
-        }
+        public IList<IODataSerializationFeature> SerializationFeatures { get; }
 
         /// <summary>
         /// Creates and returns an OData complex type value using the specified object graph, tpye, and context.

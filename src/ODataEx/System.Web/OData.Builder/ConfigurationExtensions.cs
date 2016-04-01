@@ -76,41 +76,5 @@
                 },
                 false );
         }
-
-        /// <summary>
-        /// Configures the link factory for an action.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="Type">type</see> of entity to configure an action for.</typeparam>
-        /// <param name="actionConfiguration">The extended <see cref="ActionConfiguration">action configuration</see>.</param>
-        /// <param name="shouldAdvertise">The <see cref="Func{T, TResult}">function</see> used to determine whether the action should be advertised.</param>
-        /// <returns>The original <see cref="ActionConfiguration"/>.</returns>
-        /// <remarks>This method simplifies the process of creating links for transient actions.</remarks>
-        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
-        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
-        public static ActionConfiguration HasActionLink<TEntity>( this ActionConfiguration actionConfiguration, Func<TEntity, bool> shouldAdvertise )
-        {
-            Arg.NotNull( actionConfiguration, nameof( actionConfiguration ) );
-            Arg.NotNull( shouldAdvertise, nameof( shouldAdvertise ) );
-            Contract.Ensures( Contract.Result<ActionConfiguration>() != null );
-
-            var config = actionConfiguration;
-            var advertised = shouldAdvertise;
-
-            actionConfiguration.HasActionLink(
-                context =>
-                {
-                    // note: cannot generate a link within a projection (e.g. $select) or if the link should not be advertised
-                    if ( context.SerializerContext.SelectExpandClause != null || !advertised( (TEntity) context.EntityInstance ) )
-                        return null;
-
-                    var operation = (IEdmAction) context.EdmModel.FindDeclaredBoundOperations( config.FullyQualifiedName, context.EntityType ).Single();
-
-                    // HACK: we currently need to clone the operation to address a bug within the GenerateActionLink which does not use the fully-qualified action name
-                    return context.GenerateActionLink( operation.CloneWithQualifiedName() );
-                },
-                false );
-
-            return actionConfiguration;
-        }
     }
 }

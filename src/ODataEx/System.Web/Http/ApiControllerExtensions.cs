@@ -11,6 +11,7 @@
     using Net;
     using Net.Http;
     using Net.Http.Headers;
+    using OData.Query;
     using Results;
     using static More.ExceptionMessage;
     using static System.Globalization.CultureInfo;
@@ -21,12 +22,77 @@
     /// </summary>
     public static class ApiControllerExtensions
     {
+        private const HttpStatusCode Http428 = (HttpStatusCode) 428;
         private static byte[] EmptyContent = new byte[0];
+
+        /// <summary>
+        /// Returns HTTP status code 204 (No Content).
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see>.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> when no content is returned.</returns>
+        public static IHttpActionResult NoContent( this ApiController controller )
+        {
+            Arg.NotNull( controller, nameof( controller ) );
+            Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
+            return new StatusCodeResult( HttpStatusCode.NoContent, controller );
+        }
+
+        /// <summary>
+        /// Returns HTTP status code 412 (Precondition Failed).
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see>.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> when a server precondition has failed.</returns>
+        public static IHttpActionResult PreconditionFailed( this ApiController controller )
+        {
+            Arg.NotNull( controller, nameof( controller ) );
+            Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
+            return new StatusCodeResult( HttpStatusCode.PreconditionFailed, controller );
+        }
+
+        /// <summary>
+        /// Returns HTTP status code 412 (Precondition Failed).
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see>.</param>
+        /// <param name="error">The <see cref="ODataError">error information</see> returned to the client.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> when a server precondition has failed.</returns>
+        public static IHttpActionResult PreconditionFailed( this ApiController controller, ODataError error )
+        {
+            Arg.NotNull( controller, nameof( controller ) );
+            Arg.NotNull( error, nameof( error ) );
+            Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
+            return new NegotiatedContentResult<ODataError>( HttpStatusCode.PreconditionFailed, error, controller );
+        }
+
+        /// <summary>
+        /// Returns HTTP status code 428 (Precondition Required).
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see>.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> when a server precondition was required, but not sent by the client.</returns>
+        public static IHttpActionResult PreconditionRequired( this ApiController controller )
+        {
+            Arg.NotNull( controller, nameof( controller ) );
+            Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
+            return new StatusCodeResult( Http428, controller );
+        }
+
+        /// <summary>
+        /// Returns HTTP status code 428 (Precondition Required).
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see>.</param>
+        /// <param name="error">The <see cref="ODataError">error information</see> returned to the client.</param>
+        /// <returns>The <see cref="IHttpActionResult">response</see> when a server precondition was required, but not sent by the client.</returns>
+        public static IHttpActionResult PreconditionRequired( this ApiController controller, ODataError error )
+        {
+            Arg.NotNull( controller, nameof( controller ) );
+            Arg.NotNull( error, nameof( error ) );
+            Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
+            return new NegotiatedContentResult<ODataError>( Http428, error, controller );
+        }
 
         /// <summary>
         /// Returns HTTP status code 200 (OK) for the specified query results.
         /// </summary>
-        /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see>.</param>
         /// <param name="results">The <see cref="IQueryable">query</see> results.</param>
         /// <returns>The <see cref="IHttpActionResult">response</see> for the specified <paramref name="results"/>.</returns>
         /// <remarks>This extension method addresses a known issue where the <see cref="IQueryable"/> results may not
@@ -136,7 +202,7 @@
         /// <remarks>This method will return HTTP status code 416 (Requested Range Not Satisfiable) if the client specifies an invalid range.</remarks>
         public static IHttpActionResult SuccessOrPartialContent( this ApiController controller, Stream stream, string mediaType ) =>
             controller.SuccessOrPartialContent( stream, new MediaTypeHeaderValue( mediaType.OrWhenNullOrEmpty( Octet ) ) );
-        
+
         /// <summary>
         /// Returns HTTP status code 200 (OK) or 206 (Partial Content) if the client requested the "Range" header and the range can be satisfied.
         /// </summary>
@@ -269,8 +335,10 @@
         [SuppressMessage( "Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by the caller." )]
         public static IHttpActionResult NotImplemented( this ApiController controller )
         {
+            Arg.NotNull( controller, nameof( controller ) );
+            Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
             var error = new ODataError() { Message = string.Format( CurrentCulture, ControllerUnsupportedMethod, controller.Request.Method ) };
-            return new ResponseMessageResult( controller.Request.CreateResponse( HttpStatusCode.NotImplemented, error ) );
+            return new NegotiatedContentResult<ODataError>( HttpStatusCode.NotImplemented, error, controller );
         }
 
         /// <summary>
@@ -283,9 +351,11 @@
         [SuppressMessage( "Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by the caller." )]
         public static IHttpActionResult NotImplemented( this ApiController controller, string message )
         {
+            Arg.NotNull( controller, nameof( controller ) );
             Arg.NotNullOrEmpty( message, nameof( message ) );
+            Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
             var error = new ODataError() { Message = message };
-            return new ResponseMessageResult( controller.Request.CreateResponse( HttpStatusCode.NotImplemented, error ) );
+            return new NegotiatedContentResult<ODataError>( HttpStatusCode.NotImplemented, error, controller );
         }
 
         /// <summary>
@@ -301,7 +371,58 @@
             Arg.NotNull( controller, nameof( controller ) );
             Arg.NotNull( error, nameof( error ) );
             Contract.Ensures( Contract.Result<IHttpActionResult>() != null );
-            return new ResponseMessageResult( controller.Request.CreateResponse( HttpStatusCode.NotImplemented, error ) );
+            return new NegotiatedContentResult<ODataError>( HttpStatusCode.NotImplemented, error, controller );
+        }
+
+        /// <summary>
+        /// Validates the specified OData query.
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
+        /// <param name="queryOptions">The <see cref="ODataQueryOptions">query options</see> to validate.</param>
+        /// <param name="validationSettings">The <see cref="ODataValidationSettings">validation settings</see> to use.</param>
+        /// <returns>A <see cref="ODataQueryValidationResult">validation result</see> indicating whether the options represent a valid request.</returns>
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
+        public static ODataQueryValidationResult ValidateQuery( this ApiController controller, ODataQueryOptions queryOptions, ODataValidationSettings validationSettings )
+        {
+            Arg.NotNull( controller, nameof( controller ) );
+            Arg.NotNull( queryOptions, nameof( queryOptions ) );
+            Arg.NotNull( validationSettings, nameof( validationSettings ) );
+            Contract.Ensures( Contract.Result<ODataQueryValidationResult>() != null );
+
+            try
+            {
+                queryOptions.Validate( validationSettings );
+                return new ODataQueryValidationResult( null, controller );
+            }
+            catch ( ODataException error )
+            {
+                return new ODataQueryValidationResult( error, controller );
+            }
+        }
+
+        /// <summary>
+        /// Ensures the specified OData query is valid and throws an <see cref="HttpResponseException">exception</see> if it is invalid.
+        /// </summary>
+        /// <param name="controller">The extended <see cref="ApiController">controller</see> .</param>
+        /// <param name="queryOptions">The <see cref="ODataQueryOptions">query options</see> to validate.</param>
+        /// <param name="validationSettings">The <see cref="ODataValidationSettings">validation settings</see> to use.</param>
+        [SuppressMessage( "Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by ASP.NET" )]
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
+        public static void EnsureValidQuery( this ApiController controller, ODataQueryOptions queryOptions, ODataValidationSettings validationSettings )
+        {
+            Arg.NotNull( controller, nameof( controller ) );
+            Arg.NotNull( queryOptions, nameof( queryOptions ) );
+            Arg.NotNull( validationSettings, nameof( validationSettings ) );
+
+            try
+            {
+                queryOptions.Validate( validationSettings );
+            }
+            catch ( ODataException error )
+            {
+                throw new HttpResponseException( controller.Request.CreateResponse( HttpStatusCode.BadRequest, new ODataError() { Message = error.Message } ) );
+            }
         }
     }
 }

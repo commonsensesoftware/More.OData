@@ -1,7 +1,7 @@
-﻿using System.Diagnostics.Contracts;
-namespace System.Web.OData.Builder
+﻿namespace System.Web.OData.Builder
 {
     using Diagnostics.CodeAnalysis;
+    using Diagnostics.Contracts;
     using Linq.Expressions;
 
     /// <summary>

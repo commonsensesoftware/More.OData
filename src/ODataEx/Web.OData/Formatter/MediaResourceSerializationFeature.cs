@@ -12,18 +12,6 @@
     public class MediaResourceSerializationFeature : IODataSerializationFeature
     {
         /// <summary>
-        /// Applies the serialization feature to the specified OData feed using the provided context.
-        /// </summary>
-        /// <param name="feed">The <see cref="ODataFeed"/> to apply the serialization feature to.</param>
-        /// <param name="context">The <see cref="ODataSerializationFeatureContext"/> used to apply feature-specific serialization.</param>
-        /// <remarks>The default implementation does not apply any additional serialization features.</remarks>
-        public virtual void Apply( ODataFeed feed, ODataSerializationFeatureContext context )
-        {
-            Arg.NotNull( feed, nameof( feed ) );
-            Arg.NotNull( context, nameof( context ) );
-        }
-
-        /// <summary>
         /// Applies the serialization feature to the specified OData entry using the provided context.
         /// </summary>
         /// <param name="entry">The <see cref="ODataEntry"/> to apply the serialization feature to.</param>
@@ -38,34 +26,26 @@
             var entityContext = context.EntityInstanceContext;
             var entityType = entityContext.EntityType;
 
-            // if the model doesn't have a stream, then this isn't a media link entry
             if ( !entityType.HasStream )
                 return;
 
-            // if no metadata was requested, we don't build a reference
             if ( entityContext.SerializerContext.MetadataLevel == NoMetadata )
                 return;
 
             var instance = entityContext.TryGetEntityInstance();
 
-            // must have an entity in order to generate a MLE
             if ( instance == null )
                 return;
 
-            // determine whether the media resource is configured via an annotation
             var annotation = entityContext.EdmModel.GetAnnotationValue<MediaLinkEntryAnnotation>( entityType );
 
-            // the entry is not annotated, so we don't have what's need to build the reference
             if ( annotation == null )
                 return;
 
-            // get the content type from the current entity instance
             var contentType = annotation.GetContentType( instance );
             var readLink = annotation.GenerateReadLink?.Invoke( entityContext );
             var editLink = annotation.GenerateEditLink?.Invoke( entityContext );
 
-            // if the content type is unspecified or we don't have a read or edit link, this either means the entity instance
-            // doesn't have a media resource or there is an issue with the data; downgrade gracefully
             if ( string.IsNullOrEmpty( contentType ) || ( readLink == null && editLink == null ) )
                 return;
 
@@ -80,16 +60,12 @@
             entry.MediaResource = mediaResource;
         }
 
-        /// <summary>
-        /// Applies the serialization feature to the specified OData complex value using the provided context.
-        /// </summary>
-        /// <param name="complexValue">The <see cref="ODataComplexValue"/> to apply the serialization feature to.</param>
-        /// <param name="context">The <see cref="ODataSerializationFeatureContext"/> used to apply feature-specific serialization.</param>
-        /// <remarks>The default implementation does not apply any additional serialization features.</remarks>
-        public virtual void Apply( ODataComplexValue complexValue, ODataSerializationFeatureContext context )
+        void IODataSerializationFeature.Apply( ODataFeed feed, ODataSerializationFeatureContext context )
         {
-            Arg.NotNull( complexValue, nameof( complexValue ) );
-            Arg.NotNull( context, nameof( context ) );
+        }
+
+        void IODataSerializationFeature.Apply( ODataComplexValue complexValue, ODataSerializationFeatureContext context )
+        {
         }
     }
 }
