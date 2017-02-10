@@ -110,9 +110,10 @@
     <Compile Include="Integration\Address.cs" />
     <Compile Include="Integration\CamelCaseInstanceAnnotationsTest.cs" />
     <Compile Include="Integration\DisplayStyle.cs" />
+    <Compile Include="Integration\MediaResourceUsingConstantTest.cs" />
     <Compile Include="Integration\WebApiUnitTest.cs" />
     <Compile Include="Integration\InstanceAnnotationsTest.cs" />
-    <Compile Include="Integration\MediaResourceTest.cs" />
+    <Compile Include="Integration\MediaResourceUsingExpressionTest.cs" />
     <Compile Include="Integration\PeopleController.cs" />
     <Compile Include="Integration\PeopleRepository.cs" />
     <Compile Include="Integration\Person.cs" />

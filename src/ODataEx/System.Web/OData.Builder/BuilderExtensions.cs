@@ -152,16 +152,14 @@
 
             AnnotationConfigurationCollection configurations;
 
-            // short-circuit if there's nothing to do
-            if ( !annotationConfigurations.TryRemove( modelBuilder, out configurations ) )
-                goto ClearMap;
+            if ( annotationConfigurations.TryRemove( modelBuilder, out configurations ) )
+            {
+                foreach ( var configuration in configurations )
+                    configuration.Apply( model );
 
-            foreach ( var configuration in configurations )
-                configuration.Apply( model );
+                configurations.Clear();
+            }
 
-            configurations.Clear();
-
-            ClearMap:
             ClearModelBuilderMap( modelBuilder );
         }
 
@@ -241,6 +239,41 @@
                 };
             } );
             var annotation = new MediaLinkEntryAnnotation( contentType );
+
+            mediaTypeConfig = new MediaTypeConfiguration<TEntityType>( configuration, annotation );
+            configurations.Add( key, mediaTypeConfig );
+
+            return mediaTypeConfig;
+        }
+
+        /// <summary>
+        /// Configures the specified entity as a media link entry (MLE) and uses the provided property to retrieve the media content type.
+        /// </summary>
+        /// <typeparam name="TEntityType">The <see cref="Type">type</see> of entity to configure.</typeparam>
+        /// <param name="configuration">The <see cref="EntityTypeConfiguration{TEntityType}">entity type configuration</see> to configure as a media link entry.</param>
+        /// <param name="contentType"></param>
+        /// <returns>The <see cref="MediaTypeConfiguration{TEntityType}">configuration</see> that can be used to further configure the media type.</returns>
+        [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Required for generics." )]
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated by a code contract." )]
+        [SuppressMessage( "Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Validated by a code contract." )]
+        public static MediaTypeConfiguration<TEntityType> MediaType<TEntityType>( this EntityTypeConfiguration<TEntityType> configuration, string contentType ) where TEntityType : class
+        {
+            Arg.NotNull( configuration, nameof( configuration ) );
+            Contract.Ensures( Contract.Result<MediaTypeConfiguration<TEntityType>>() != null );
+
+            var key = typeof( TEntityType ).FullName + ".MediaType";
+            var builder = configuration.GetModelBuilder();
+            var configurations = builder.GetAnnotationConfigurations();
+            MediaTypeConfiguration<TEntityType> mediaTypeConfig;
+
+            if ( configurations.TryGet( key, out mediaTypeConfig ) )
+            {
+                return mediaTypeConfig;
+            }
+
+            configuration.MediaType();
+
+            var annotation = new MediaLinkEntryAnnotation( instance => contentType );
 
             mediaTypeConfig = new MediaTypeConfiguration<TEntityType>( configuration, annotation );
             configurations.Add( key, mediaTypeConfig );
